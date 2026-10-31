@@ -32,8 +32,11 @@ npm run start
 ### Design System & shadcn UI Stack
 * **Framework**: Next.js 14 (App Router with SSR/Static generation)
 * **Styling**: Tailwind CSS with shadcn UI design tokens (Card, Dialog, Table, Tabs, Input, Select, Badge, Button)
+* **Backend Architecture**: REST API routes (`/api/subscriptions`, `/api/invoices`, `/api/payments`, `/api/company`, `/api/audit`, `/api/cron/billing-day`) backed by persistent server-side JSON storage with auto-reconciliation and real-time audit ledger.
+* **Portal Split**: Dedicated User Portal (for subscribers with plan catalogs, variant selections, subscription management, and direct invoice payments) and Company Portal (for executive administration, live MRR/receivables rollups, subsidiaries, and live audit telemetry).
+* **Cross-Portal Live Reflection**: User actions (subscribing, paying invoices, status pauses) instantly reflect on the Company Desk's revenue counters and audit ledger without requiring manual refreshes.
 * **Icons**: Lucide React
-* **Type Safety**: Full TypeScript definitions for all domains (Subscriptions, Invoices, Products, Plans, Discounts, Payments)
+* **Type Safety**: Full TypeScript definitions for all domains (Subscriptions, Invoices, Products, Plans, Discounts, Payments, Company, Auth)
 * **Command Bar**: Global Command Palette accessible via `Ctrl + K` / `⌘K`
 
 ---

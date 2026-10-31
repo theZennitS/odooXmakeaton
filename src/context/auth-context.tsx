@@ -65,6 +65,9 @@ export interface DeviceSession {
 }
 
 export interface AuthContextType extends AuthState {
+  user: AuthUser | null;
+  session: UserSession | null;
+  isLoading: boolean;
   login: (email: string, password: string, rememberMe?: boolean) => Promise<{ success: boolean; error?: string }>;
   register: (name: string, email: string, role: Role, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
@@ -374,6 +377,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       value={{
         user,
         session,
+        currentUser: user,
+        currentSession: session,
         isAuthenticated: !!user && !!session?.isValid,
         isLoading,
         login,

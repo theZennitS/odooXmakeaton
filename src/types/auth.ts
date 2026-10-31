@@ -9,8 +9,8 @@ export interface AuthUser {
   role: Role;
   department?: string;
   avatar?: string;
-  mfaEnabled: boolean;
-  createdAt: string;
+  mfaEnabled?: boolean;
+  createdAt?: string;
   lastLoginAt?: string;
 }
 
@@ -41,10 +41,9 @@ export interface RegisterCredentials {
 }
 
 export interface AuthState {
-  user: AuthUser | null;
-  session: UserSession | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
+  currentUser: AuthUser | null;
+  currentSession: UserSession | null;
 }
 
 export type PermissionKey =
