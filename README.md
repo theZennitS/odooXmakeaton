@@ -3,12 +3,12 @@
 
 ---
 
-### 🌟 Project Overview
+### Project Overview
 This project is an end-to-end **Subscription Management Platform** built for Brightloop Software, rebuilt with **Next.js 14 (App Router)**, **TypeScript**, **Tailwind CSS**, and **shadcn UI**. It incorporates all Frappe-grade core business logic, schemas, state machine lifecycle transitions, and high-performance calculation engines without requiring heavy containers, Docker, Redis, or Frappe Bench.
 
 ---
 
-### 🚀 Getting Started
+### Getting Started
 
 #### 1. Install Dependencies
 ```bash
@@ -29,7 +29,7 @@ npm run start
 
 ---
 
-### 🎨 Design System & shadcn UI Stack
+### Design System & shadcn UI Stack
 * **Framework**: Next.js 14 (App Router with SSR/Static generation)
 * **Styling**: Tailwind CSS with shadcn UI design tokens (Card, Dialog, Table, Tabs, Input, Select, Badge, Button)
 * **Icons**: Lucide React
@@ -38,7 +38,7 @@ npm run start
 
 ---
 
-### 🎯 How Each Scene from the Hackathon Challenge is Solved
+### How Each Scene from the Hackathon Challenge is Solved
 
 | Problem Scene from Prompt | Implemented Solution in this App |
 | :--- | :--- |
@@ -52,7 +52,7 @@ npm run start
 
 ---
 
-### 📂 Architecture & Directory Structure
+### Architecture & Directory Structure
 ```
 ├── src/
 │   ├── app/

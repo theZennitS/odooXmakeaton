@@ -11,3 +11,4 @@ export function fmtCurr(n: number | undefined | null): string {
     maximumFractionDigits: 2,
   });
 }
+

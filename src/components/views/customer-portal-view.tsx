@@ -197,3 +197,4 @@ export const CustomerPortalView: React.FC = () => {
     </div>
   );
 };
+

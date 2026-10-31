@@ -369,3 +369,4 @@ export const INITIAL_STATE: BrightloopState = {
   discount_rules: DEFAULT_DISCOUNT_RULES,
   counters: { SUB: 6, INV: 3, PAY: 2 }
 };
+

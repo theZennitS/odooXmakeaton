@@ -100,3 +100,4 @@ export const DiscountRulesView: React.FC = () => {
     </div>
   );
 };
+

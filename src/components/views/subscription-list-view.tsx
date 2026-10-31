@@ -230,3 +230,4 @@ export const SubscriptionListView: React.FC = () => {
     </div>
   );
 };
+

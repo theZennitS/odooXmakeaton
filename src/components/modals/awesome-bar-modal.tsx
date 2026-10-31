@@ -192,3 +192,4 @@ export const AwesomeBarModal: React.FC = () => {
     </div>
   );
 };
+

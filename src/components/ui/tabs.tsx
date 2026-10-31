@@ -95,3 +95,4 @@ const TabsContent = React.forwardRef<HTMLDivElement, TabsContentProps>(
 TabsContent.displayName = "TabsContent";
 
 export { Tabs, TabsList, TabsTrigger, TabsContent };
+

@@ -288,3 +288,4 @@ export const AnalyticsView: React.FC = () => {
     </div>
   );
 };
+
