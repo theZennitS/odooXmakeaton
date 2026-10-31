@@ -2,6 +2,7 @@
 
 import React from "react";
 import { useBrightloop } from "@/context/brightloop-context";
+import { useAuth } from "@/context/auth-context";
 import { Role } from "@/types";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,9 +13,16 @@ import {
   Shield,
   User,
   Users,
+  LogOut,
 } from "lucide-react";
 
-export const Navbar: React.FC = () => {
+interface NavbarProps {
+  onOpenNotifications?: () => void;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({
+  onOpenNotifications,
+}) => {
   const {
     currentWorkspace,
     currentRole,
@@ -24,6 +32,8 @@ export const Navbar: React.FC = () => {
     navigateTo,
     addToast,
   } = useBrightloop();
+
+  const { user, session, setAuthModalOpen } = useAuth();
 
   const handleRoleChange = (newRole: Role) => {
     setCurrentRole(newRole);
@@ -51,10 +61,23 @@ export const Navbar: React.FC = () => {
         return "Executive Analytics";
       case "portal":
         return "Customer Portal";
+      case "users":
+        return "Team & RBAC Matrix";
+      case "company":
+        return "Company & Organization";
+      case "health":
+        return "System Health & Diagnostics";
+      default:
+        return "Desk";
     }
   };
 
   const getAvatarInitials = () => {
+    if (user?.name) {
+      const parts = user.name.split(" ");
+      if (parts.length >= 2) return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
+      return user.name.substring(0, 2).toUpperCase();
+    }
     switch (currentRole) {
       case "Admin":
         return "SM";
@@ -136,23 +159,24 @@ export const Navbar: React.FC = () => {
         {/* Notification Bell */}
         <button
           type="button"
-          onClick={() => addToast("All services operational. Automated cron scheduler is active.", "info")}
+          onClick={() => (onOpenNotifications ? onOpenNotifications() : addToast("All services operational. Automated cron scheduler is active.", "info"))}
           className="p-1.5 text-muted-foreground hover:text-foreground rounded-md hover:bg-muted/50 transition-colors relative"
-          title="Notifications"
+          title="Notification Center"
         >
           <Bell className="w-4 h-4" />
           <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-blue-600 rounded-full" />
         </button>
 
-        {/* User Avatar */}
-        <div
-          className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-semibold shadow-xs select-none"
-          title={`Logged in as ${currentRole}`}
+        {/* User Avatar with Auth Modal trigger */}
+        <button
+          type="button"
+          onClick={() => setAuthModalOpen(true)}
+          className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-semibold shadow-xs select-none hover:ring-2 hover:ring-blue-500 transition-all cursor-pointer"
+          title={`User: ${user?.name || currentRole} (Click to manage account & sessions)`}
         >
           {getAvatarInitials()}
-        </div>
+        </button>
       </div>
     </header>
   );
 };
-

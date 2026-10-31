@@ -6,7 +6,10 @@ export type WorkspaceId =
   | "products"
   | "discounts"
   | "analytics"
-  | "portal";
+  | "portal"
+  | "users"
+  | "company"
+  | "health";
 
 export interface Variant {
   name: string;
@@ -149,5 +152,7 @@ export interface BrightloopState {
   };
 }
 
-
 export * from "./auth";
+export * from "./user";
+export * from "./company";
+export * from "./overall";

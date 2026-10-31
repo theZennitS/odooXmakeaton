@@ -11,6 +11,9 @@ import {
   BarChart3,
   UserCheck,
   CheckCircle,
+  Users,
+  Building2,
+  Activity,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -51,6 +54,24 @@ export const Sidebar: React.FC = () => {
     },
   ];
 
+  const administrationWorkspaces: NavItem[] = [
+    {
+      id: "users",
+      label: "Team & RBAC",
+      icon: <Users className="w-4 h-4" />,
+    },
+    {
+      id: "company",
+      label: "Company Profile",
+      icon: <Building2 className="w-4 h-4" />,
+    },
+    {
+      id: "health",
+      label: "System Health",
+      icon: <Activity className="w-4 h-4" />,
+    },
+  ];
+
   const portalWorkspaces: NavItem[] = [
     {
       id: "portal",
@@ -61,7 +82,7 @@ export const Sidebar: React.FC = () => {
 
   return (
     <aside className="w-60 border-r bg-muted/20 flex flex-col justify-between shrink-0 h-[calc(100vh-3.5rem)] sticky top-14 select-none">
-      <div className="p-3 space-y-6 overflow-y-auto">
+      <div className="p-3 space-y-5 overflow-y-auto">
         {/* Main Workspaces */}
         <div>
           <div className="px-3 pb-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
@@ -91,10 +112,41 @@ export const Sidebar: React.FC = () => {
           </div>
         </div>
 
+        {/* Administration & Setup */}
+        {currentRole !== "Customer" && (
+          <div>
+            <div className="px-3 pb-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
+              Administration
+            </div>
+            <div className="space-y-1">
+              {administrationWorkspaces.map((item) => {
+                const isActive = currentWorkspace === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    onClick={() => navigateTo(item.id, "list")}
+                    className={cn(
+                      "w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors text-left",
+                      isActive
+                        ? "bg-blue-600 text-white font-semibold shadow-xs"
+                        : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    )}
+                  >
+                    <span className={cn(isActive ? "text-white" : "text-muted-foreground")}>
+                      {item.icon}
+                    </span>
+                    <span>{item.label}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* Portal & Tools */}
         <div>
           <div className="px-3 pb-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-            Portal & Tools
+            Portal &amp; Tools
           </div>
           <div className="space-y-1">
             {portalWorkspaces.map((item) => {
@@ -136,4 +188,3 @@ export const Sidebar: React.FC = () => {
     </aside>
   );
 };
-

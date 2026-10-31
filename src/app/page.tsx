@@ -1,7 +1,8 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useBrightloop } from "@/context/brightloop-context";
+import { useAuth } from "@/context/auth-context";
 import { Navbar } from "@/components/layout/navbar";
 import { Sidebar } from "@/components/layout/sidebar";
 import { SubscriptionListView } from "@/components/views/subscription-list-view";
@@ -11,14 +12,21 @@ import { ProductsPlansView } from "@/components/views/products-plans-view";
 import { DiscountRulesView } from "@/components/views/discount-rules-view";
 import { AnalyticsView } from "@/components/views/analytics-view";
 import { CustomerPortalView } from "@/components/views/customer-portal-view";
+import { UserManagementView } from "@/components/views/user-management-view";
+import { CompanyWorkspaceView } from "@/components/views/company-workspace-view";
+import { SystemHealthView } from "@/components/views/system-health-view";
 import { AwesomeBarModal } from "@/components/modals/awesome-bar-modal";
 import { PaymentDialog } from "@/components/modals/payment-dialog";
 import { DiscountDialog } from "@/components/modals/discount-dialog";
 import { InvoicePreviewModal } from "@/components/modals/invoice-preview-modal";
+import { AuthModal } from "@/components/modals/auth-modal";
+import { NotificationDrawer } from "@/components/layout/notification-drawer";
 import { Toaster } from "@/components/ui/toaster";
 
 export default function BrightloopDeskPage() {
-  const { currentWorkspace, viewMode } = useBrightloop();
+  const { currentWorkspace, viewMode, navigateTo } = useBrightloop();
+  const { authModalOpen, setAuthModalOpen } = useAuth();
+  const [notificationDrawerOpen, setNotificationDrawerOpen] = useState(false);
 
   const renderActiveWorkspace = () => {
     switch (currentWorkspace) {
@@ -34,6 +42,12 @@ export default function BrightloopDeskPage() {
         return <AnalyticsView />;
       case "portal":
         return <CustomerPortalView />;
+      case "users":
+        return <UserManagementView />;
+      case "company":
+        return <CompanyWorkspaceView />;
+      case "health":
+        return <SystemHealthView />;
       default:
         return <SubscriptionListView />;
     }
@@ -42,7 +56,9 @@ export default function BrightloopDeskPage() {
   return (
     <div className="min-h-screen bg-background flex flex-col font-sans text-foreground">
       {/* Top Frappe / Brightloop Desk Header */}
-      <Navbar />
+      <Navbar
+        onOpenNotifications={() => setNotificationDrawerOpen(true)}
+      />
 
       {/* Main Workspace Layout */}
       <div className="flex-1 flex overflow-hidden">
@@ -55,13 +71,18 @@ export default function BrightloopDeskPage() {
         </main>
       </div>
 
-      {/* Global Modals & Notifications */}
+      {/* Global Modals & Drawers */}
       <AwesomeBarModal />
       <PaymentDialog />
       <DiscountDialog />
       <InvoicePreviewModal />
+      <AuthModal />
+      <NotificationDrawer
+        open={notificationDrawerOpen}
+        onClose={() => setNotificationDrawerOpen(false)}
+        onNavigate={(ws) => navigateTo(ws)}
+      />
       <Toaster />
     </div>
   );
 }
-
