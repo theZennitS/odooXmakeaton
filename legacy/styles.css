@@ -1,0 +1,1295 @@
+/* ==========================================================================
+   FRAPPE DESK & FRAPPE UI DESIGN SYSTEM
+   Authentic Frappe Framework v14/v15 Aesthetic
+   ========================================================================== */
+
+:root {
+  /* Frappe Brand Palette */
+  --frappe-blue: #2490EF;
+  --frappe-blue-hover: #1A7CD8;
+  --frappe-blue-light: #EBF5FE;
+  
+  --frappe-dark: #171717;
+  --frappe-dark-hover: #262626;
+
+  /* Surfaces & Backgrounds */
+  --desk-bg: #F4F5F6;
+  --card-bg: #FFFFFF;
+  --sidebar-bg: #F8F9FA;
+  --navbar-bg: #FFFFFF;
+  
+  /* Borders */
+  --border-color: #E2E8F0;
+  --border-subtle: #EDF2F7;
+  --border-dark: #CBD5E1;
+
+  /* Typography */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --text-primary: #1F272E;
+  --text-regular: #36414C;
+  --text-muted: #64748B;
+  --text-light: #94A3B8;
+
+  /* Frappe Status Indicators */
+  --indicator-green: #10B981;
+  --indicator-blue: #2490EF;
+  --indicator-orange: #F59E0B;
+  --indicator-red: #EF4444;
+  --indicator-gray: #94A3B8;
+
+  /* Radius & Shadows */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-pill: 9999px;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --shadow-modal: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+}
+
+/* Base Setup */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body.frappe-desk {
+  font-family: var(--font-family);
+  background-color: var(--desk-bg);
+  color: var(--text-primary);
+  font-size: 13px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* ==========================================================================
+   1. FRAPPE TOP NAVBAR
+   ========================================================================== */
+.frappe-navbar {
+  height: 48px;
+  background: var(--navbar-bg);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  z-index: 100;
+  flex-shrink: 0;
+}
+
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.frappe-brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  text-decoration: none;
+  color: var(--text-primary);
+}
+
+.brand-square {
+  width: 26px;
+  height: 26px;
+  background: var(--frappe-blue);
+  color: #FFFFFF;
+  font-weight: 700;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+}
+
+.brand-name {
+  font-weight: 600;
+  font-size: 14px;
+  letter-spacing: -0.2px;
+}
+
+.navbar-breadcrumbs {
+  font-size: 12px;
+  color: var(--text-muted);
+  border-left: 1px solid var(--border-color);
+  padding-left: 12px;
+  font-weight: 500;
+}
+
+/* Awesome-bar Search */
+.navbar-center {
+  flex: 1;
+  max-width: 480px;
+  margin: 0 20px;
+}
+
+.awesomebar-wrap {
+  background: #F1F3F5;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  height: 32px;
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  gap: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.awesomebar-wrap:hover {
+  background: #E9ECEF;
+  border-color: var(--border-color);
+}
+
+.search-icon {
+  width: 14px;
+  height: 14px;
+  stroke: var(--text-light);
+}
+
+.awesomebar-placeholder {
+  font-size: 12px;
+  color: var(--text-muted);
+  flex: 1;
+}
+
+.awesomebar-shortcut {
+  font-size: 11px;
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  padding: 1px 5px;
+  border-radius: 4px;
+  color: var(--text-muted);
+  font-family: inherit;
+}
+
+/* Navbar Right */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.nav-role-badge {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #F1F3F5;
+  border: 1px solid var(--border-color);
+  padding: 3px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+}
+
+.nav-role-badge label {
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
+.nav-role-badge select {
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--frappe-blue);
+  cursor: pointer;
+  outline: none;
+}
+
+.nav-icon-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-icon-btn:hover {
+  background: #F1F3F5;
+  color: var(--text-primary);
+}
+
+.nav-icon-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.notif-dot {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 6px;
+  height: 6px;
+  background: var(--indicator-orange);
+  border-radius: 50%;
+}
+
+.user-avatar-wrap {
+  cursor: pointer;
+}
+
+.user-avatar {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #E2E8F0;
+  color: var(--text-primary);
+  font-size: 11px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   2. DESK SIDEBAR (WORKSPACES)
+   ========================================================================== */
+.desk-container {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+}
+
+.desk-sidebar {
+  width: 220px;
+  min-width: 220px;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  padding: 16px 0;
+  user-select: none;
+}
+
+.sidebar-section-title {
+  padding: 8px 16px 4px 16px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-light);
+  letter-spacing: 0.5px;
+}
+
+.sidebar-menu {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 0 8px;
+  margin-bottom: 16px;
+}
+
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-regular);
+  cursor: pointer;
+  transition: all 0.12s ease;
+}
+
+.sidebar-item:hover {
+  background: #ECEFF1;
+  color: var(--text-primary);
+}
+
+.sidebar-item.active {
+  background: #FFFFFF;
+  color: var(--frappe-blue);
+  font-weight: 600;
+  box-shadow: var(--shadow-sm);
+}
+
+.sidebar-item svg {
+  width: 16px;
+  height: 16px;
+  stroke: currentColor;
+}
+
+.sidebar-footer-box {
+  margin-top: auto;
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.frappe-badge-row {
+  display: flex;
+  gap: 6px;
+}
+
+.frappe-pill-badge {
+  font-size: 10px;
+  font-weight: 600;
+  background: #E2E8F0;
+  color: var(--text-regular);
+  padding: 2px 6px;
+  border-radius: var(--radius-pill);
+}
+
+.frappe-pill-badge.green { background: #DCFCE7; color: #15803D; }
+.frappe-pill-badge.blue { background: #DBEAFE; color: #1E40AF; }
+
+.sidebar-subtext {
+  font-size: 11px;
+  color: var(--text-light);
+}
+
+/* ==========================================================================
+   3. DESK MAIN & PAGE HEADER
+   ========================================================================== */
+.desk-main {
+  flex: 1;
+  background: var(--desk-bg);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.page-head {
+  background: var(--card-bg);
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+
+.page-breadcrumbs {
+  font-size: 12px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 2px;
+}
+
+.bc-link {
+  color: var(--text-muted);
+  text-decoration: none;
+}
+
+.bc-link:hover {
+  color: var(--frappe-blue);
+}
+
+.bc-separator {
+  color: var(--text-light);
+}
+
+.bc-current {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.page-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.page-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.page-status-badge {
+  display: none;
+}
+
+.page-head-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Frappe Standard Buttons */
+.frappe-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 6px 14px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: all 0.12s ease;
+  white-space: nowrap;
+}
+
+.frappe-btn-primary {
+  background: var(--frappe-dark);
+  color: #FFFFFF;
+}
+
+.frappe-btn-primary:hover {
+  background: var(--frappe-dark-hover);
+}
+
+.frappe-btn-subtle {
+  background: #FFFFFF;
+  color: var(--text-primary);
+  border-color: var(--border-color);
+}
+
+.frappe-btn-subtle:hover {
+  background: #F8F9FA;
+  border-color: var(--border-dark);
+}
+
+.frappe-btn-blue {
+  background: var(--frappe-blue);
+  color: #FFFFFF;
+}
+
+.frappe-btn-blue:hover {
+  background: var(--frappe-blue-hover);
+}
+
+.btn-sm {
+  padding: 4px 10px;
+  font-size: 11px;
+}
+
+/* ==========================================================================
+   4. PAGE BODY & VIEW CONTAINERS
+   ========================================================================== */
+.page-body {
+  flex: 1;
+  padding: 20px 24px;
+  overflow-y: auto;
+}
+
+.frappe-view {
+  display: none;
+  flex-direction: column;
+  gap: 16px;
+  animation: frappeFadeIn 0.12s ease-in-out;
+}
+
+.frappe-view.active {
+  display: flex;
+}
+
+@keyframes frappeFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* ==========================================================================
+   5. FRAPPE LIST VIEW COMPONENT
+   ========================================================================== */
+.frappe-filter-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.filter-inputs-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.frappe-search-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  width: 260px;
+}
+
+.frappe-search-input-wrap svg {
+  stroke: var(--text-light);
+}
+
+.frappe-search-input-wrap input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: inherit;
+  font-size: 12px;
+  width: 100%;
+}
+
+.frappe-select-filter {
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 5px 10px;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--text-regular);
+  outline: none;
+  cursor: pointer;
+}
+
+.list-view-switcher {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.list-count-text {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.frappe-list-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+}
+
+.frappe-list-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.frappe-list-table th {
+  background: #F8F9FA;
+  padding: 8px 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.frappe-list-table td {
+  padding: 11px 14px;
+  font-size: 12px;
+  color: var(--text-regular);
+  border-bottom: 1px solid var(--border-subtle);
+  vertical-align: middle;
+}
+
+.frappe-list-table tbody tr {
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.frappe-list-table tbody tr:hover td {
+  background: #F8FAFC;
+}
+
+.frappe-list-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.doc-link {
+  color: var(--text-primary);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.doc-link:hover {
+  color: var(--frappe-blue);
+  text-decoration: underline;
+}
+
+/* Frappe Indicator Dot Badges */
+.frappe-indicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.indicator-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.indicator-dot.green { background-color: var(--indicator-green); }
+.indicator-dot.blue { background-color: var(--indicator-blue); }
+.indicator-dot.orange { background-color: var(--indicator-orange); }
+.indicator-dot.red { background-color: var(--indicator-red); }
+.indicator-dot.gray { background-color: var(--indicator-gray); }
+
+.frappe-list-footer {
+  padding: 8px 14px;
+  background: #F8F9FA;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.list-pagination-btns {
+  display: flex;
+  gap: 4px;
+}
+
+/* ==========================================================================
+   6. FRAPPE FORM VIEW COMPONENT (Standard DocType Form)
+   ========================================================================== */
+.frappe-form-container {
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-sm);
+  padding: 20px 24px;
+}
+
+.form-header-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.form-status-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #F1F3F5;
+  padding: 3px 8px;
+  border-radius: var(--radius-pill);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.form-doc-title {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Form Tabs */
+.form-tabs {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+}
+
+.form-tab {
+  background: transparent;
+  border: none;
+  padding: 8px 14px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.12s ease;
+}
+
+.form-tab:hover {
+  color: var(--text-primary);
+}
+
+.form-tab.active {
+  color: var(--frappe-blue);
+  font-weight: 600;
+  border-bottom-color: var(--frappe-blue);
+}
+
+.form-tab-pane {
+  display: none;
+}
+
+.form-tab-pane.active {
+  display: block;
+}
+
+/* Form Sections */
+.frappe-form-section {
+  margin-bottom: 24px;
+}
+
+.section-head {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  margin-bottom: 14px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.section-head-with-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.section-head-with-action .section-head {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+
+.form-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.form-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 16px;
+}
+
+.form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+
+.field-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.field-label .req {
+  color: #EF4444;
+}
+
+.field-control {
+  border: 1px solid var(--border-color);
+  background: #FFFFFF;
+  border-radius: var(--radius-sm);
+  padding: 6px 10px;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--text-primary);
+  outline: none;
+  transition: border-color 0.12s, box-shadow 0.12s;
+}
+
+.field-control:focus {
+  border-color: var(--frappe-blue);
+  box-shadow: 0 0 0 2px var(--frappe-blue-light);
+}
+
+.field-control[readonly] {
+  background: #F8F9FA;
+  color: var(--text-muted);
+}
+
+/* Frappe Child Table */
+.frappe-child-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+}
+
+.frappe-child-table th {
+  background: #F8F9FA;
+  padding: 8px 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 1px solid var(--border-color);
+  text-align: left;
+}
+
+.frappe-child-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 12px;
+}
+
+.frappe-child-table input, .frappe-child-table select {
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 4px 6px;
+  font-family: inherit;
+  font-size: 12px;
+  width: 100%;
+  outline: none;
+}
+
+.frappe-totals-box {
+  background: #F8F9FA;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 14px 18px;
+  max-width: 380px;
+  margin-left: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.totals-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.totals-row.grand-total {
+  border-top: 1px solid var(--border-color);
+  padding-top: 8px;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* Timeline / Audit Log */
+.frappe-timeline {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 10px 0;
+}
+
+.timeline-item {
+  display: flex;
+  gap: 12px;
+  font-size: 12px;
+}
+
+.timeline-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--frappe-blue);
+  margin-top: 5px;
+}
+
+.timeline-content {
+  flex: 1;
+}
+
+.timeline-meta {
+  color: var(--text-light);
+  font-size: 11px;
+}
+
+/* ==========================================================================
+   7. FINANCE ANALYTICS (FRAPPE WORKSPACE / NUMBER CARDS)
+   ========================================================================== */
+.frappe-number-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+}
+
+.frappe-number-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.card-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 500;
+  margin-bottom: 6px;
+}
+
+.card-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+  margin-bottom: 4px;
+}
+
+.card-subtext {
+  font-size: 11px;
+  color: var(--text-light);
+}
+
+.card-subtext.positive {
+  color: #10B981;
+  font-weight: 600;
+}
+
+.frappe-number-card.alert {
+  border-color: #FECDD3;
+}
+
+.text-red { color: #EF4444; }
+.text-amber { color: #D97706; }
+
+/* Callout Box for Cron Simulation */
+.frappe-callout-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-left: 4px solid var(--frappe-blue);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.callout-tag {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--frappe-blue);
+  text-transform: uppercase;
+  margin-bottom: 4px;
+}
+
+.callout-content h3 {
+  font-size: 15px;
+  font-weight: 700;
+  margin-bottom: 4px;
+}
+
+.callout-content p {
+  font-size: 12px;
+  color: var(--text-muted);
+  max-width: 720px;
+  margin-bottom: 8px;
+}
+
+.callout-badges {
+  display: flex;
+  gap: 8px;
+}
+
+.callout-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.frappe-dashboard-split {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 16px;
+}
+
+.frappe-box {
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
+  box-shadow: var(--shadow-sm);
+}
+
+.frappe-box-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.frappe-box-header h4 {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.frappe-link {
+  color: var(--frappe-blue);
+  font-size: 12px;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.frappe-link:hover {
+  text-decoration: underline;
+}
+
+.frappe-simple-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.frappe-simple-table th, .frappe-simple-table td {
+  padding: 7px 10px;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border-subtle);
+  text-align: left;
+}
+
+.frappe-simple-table th {
+  color: var(--text-light);
+  font-weight: 500;
+}
+
+/* ==========================================================================
+   8. PLANS & DISCOUNTS GRIDS
+   ========================================================================== */
+.plans-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.frappe-plan-card {
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  box-shadow: var(--shadow-sm);
+}
+
+.frappe-plan-card.featured {
+  border-color: var(--frappe-blue);
+}
+
+.discounts-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.portal-frappe-banner {
+  background: #FFFFFF;
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ==========================================================================
+   9. AWESOME-BAR COMMAND PALETTE (CTRL + K)
+   ========================================================================== */
+.awesomebar-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 100px;
+  z-index: 1000;
+}
+
+.awesomebar-modal-overlay.open {
+  display: flex;
+}
+
+.awesomebar-dialog {
+  background: #FFFFFF;
+  border-radius: var(--radius-md);
+  width: 100%;
+  max-width: 580px;
+  box-shadow: var(--shadow-modal);
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.awesomebar-input-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.awesomebar-input-wrap input {
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  font-size: 14px;
+  color: var(--text-primary);
+  flex: 1;
+  outline: none;
+}
+
+.esc-badge {
+  font-size: 10px;
+  background: #F1F3F5;
+  border: 1px solid var(--border-color);
+  padding: 2px 6px;
+  border-radius: 4px;
+  color: var(--text-muted);
+}
+
+.awesomebar-results {
+  max-height: 320px;
+  overflow-y: auto;
+  padding: 6px;
+}
+
+.awesome-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 13px;
+  cursor: pointer;
+  color: var(--text-regular);
+}
+
+.awesome-item:hover, .awesome-item.selected {
+  background: var(--frappe-blue-light);
+  color: var(--frappe-blue);
+}
+
+.awesome-item-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* ==========================================================================
+   10. FRAPPE STANDARD MODALS
+   ========================================================================== */
+.frappe-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.frappe-modal-overlay.open {
+  display: flex;
+}
+
+.frappe-modal {
+  background: #FFFFFF;
+  border-radius: var(--radius-md);
+  width: 100%;
+  max-width: 540px;
+  box-shadow: var(--shadow-modal);
+  border: 1px solid var(--border-color);
+}
+
+.frappe-modal.modal-lg {
+  max-width: 780px;
+}
+
+.modal-head {
+  padding: 14px 18px;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-title {
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-light);
+}
+
+.modal-body {
+  padding: 18px;
+}
+
+.modal-actions {
+  padding: 12px 18px;
+  background: #F8F9FA;
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* Toasts */
+.frappe-toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  z-index: 2000;
+}
+
+.frappe-toast {
+  background: #1F272E;
+  color: #FFFFFF;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  box-shadow: var(--shadow-md);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: frappeToastIn 0.15s ease-out;
+}
+
+.frappe-toast.success { border-left: 3px solid #10B981; }
+.frappe-toast.info { border-left: 3px solid var(--frappe-blue); }
+.frappe-toast.warning { border-left: 3px solid #F59E0B; }
+
+@keyframes frappeToastIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Print styling */
+@media print {
+  body * { visibility: hidden; }
+  #invoice-preview-container, #invoice-preview-container * { visibility: visible; }
+  #invoice-preview-container {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+}

@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brightloop — Frappe Subscription Management</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="frappe-desk">
+
+  <!-- ========================================================================= -->
+  <!-- 1. FRAPPE TOP NAVBAR                                                      -->
+  <!-- ========================================================================= -->
+  <header class="frappe-navbar">
+    <div class="navbar-left">
+      <!-- Frappe Brand Icon -->
+      <a href="#" class="frappe-brand" id="brand-home-link" title="Frappe Desk Home">
+        <div class="brand-square">B</div>
+        <span class="brand-name">Brightloop</span>
+      </a>
+
+      <!-- Workspace Breadcrumb / Title -->
+      <div class="navbar-breadcrumbs">
+        <span class="bc-module" id="bc-module">Subscriptions</span>
+      </div>
+    </div>
+
+    <!-- Awesome-bar Search (The iconic Frappe Global Command Bar) -->
+    <div class="navbar-center">
+      <div class="awesomebar-wrap" id="awesomebar-trigger">
+        <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <span class="awesomebar-placeholder">Search or type a command (Ctrl + K)</span>
+        <kbd class="awesomebar-shortcut">⌘K</kbd>
+      </div>
+    </div>
+
+    <div class="navbar-right">
+      <!-- Quick Simulation Action -->
+      <button class="frappe-btn frappe-btn-subtle" id="nav-btn-billing-day" title="Execute scheduled recurring billing cron">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="15" height="15"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span>Run Billing Day</span>
+      </button>
+
+      <!-- Role Switcher for Hackathon Judges -->
+      <div class="nav-role-badge">
+        <label for="frappe-role-select">Role:</label>
+        <select id="frappe-role-select">
+          <option value="Admin">System Manager (Admin)</option>
+          <option value="Staff">Sales & Billing Staff</option>
+          <option value="Customer">Customer (Brooklyn Zoe)</option>
+        </select>
+      </div>
+
+      <!-- Notification Bell -->
+      <button class="nav-icon-btn" id="btn-notifications" title="Notifications">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <span class="notif-dot" id="notif-dot"></span>
+      </button>
+
+      <!-- Help / Docs Link -->
+      <button class="nav-icon-btn" id="btn-help-modal" title="Help & System Info">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      </button>
+
+      <!-- User Avatar / Dropdown -->
+      <div class="user-avatar-wrap" id="user-menu-btn" title="Logged in as System Manager">
+        <div class="user-avatar" id="nav-avatar">SM</div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- 2. DESK BODY (SIDEBAR + MAIN CANVAS)                                      -->
+  <!-- ========================================================================= -->
+  <div class="desk-container">
+
+    <!-- DESK SIDEBAR (Frappe Workspace Nav) -->
+    <aside class="desk-sidebar">
+      <!-- Workspace Heading -->
+      <div class="sidebar-section-title">WORKSPACES</div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-item active" data-workspace="subscriptions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span>Subscriptions</span>
+        </li>
+        <li class="sidebar-item" data-workspace="billing">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          <span>Billing & Invoices</span>
+        </li>
+        <li class="sidebar-item" data-workspace="products">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+          <span>Products & Plans</span>
+        </li>
+        <li class="sidebar-item" data-workspace="discounts">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          <span>Discount Rules</span>
+        </li>
+        <li class="sidebar-item" data-workspace="analytics">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+          <span>Finance Analytics</span>
+        </li>
+      </ul>
+
+      <div class="sidebar-section-title">PORTAL & TOOLS</div>
+      <ul class="sidebar-menu">
+        <li class="sidebar-item" data-workspace="portal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          <span>Customer Portal</span>
+        </li>
+      </ul>
+
+      <!-- Sidebar Bottom System Info -->
+      <div class="sidebar-footer-box">
+        <div class="frappe-badge-row">
+          <span class="frappe-pill-badge">Frappe v15</span>
+          <span class="frappe-pill-badge green">&lt; 2s SLA Pass</span>
+        </div>
+        <div class="sidebar-subtext">Brightloop Engine 2026</div>
+      </div>
+    </aside>
+
+    <!-- MAIN DESK VIEWPORT -->
+    <main class="desk-main" id="desk-main">
+
+      <!-- ===================================================================== -->
+      <!-- A. PAGE HEADER (Standard Frappe Page Head)                            -->
+      <!-- ===================================================================== -->
+      <div class="page-head" id="page-head">
+        <div class="page-head-left">
+          <div class="page-breadcrumbs" id="page-breadcrumbs">
+            <a href="#" class="bc-link">Home</a>
+            <span class="bc-separator">/</span>
+            <span class="bc-current" id="bc-current">Customer Subscription</span>
+          </div>
+          <div class="page-title-row">
+            <h1 class="page-title" id="page-title">Customer Subscription</h1>
+            <span class="page-status-badge" id="page-status-badge"></span>
+          </div>
+        </div>
+
+        <div class="page-head-right" id="page-actions-container">
+          <!-- Dynamically populated per view: e.g. [+ Add Customer Subscription], [Actions ▾], [Save] -->
+        </div>
+      </div>
+
+      <!-- ===================================================================== -->
+      <!-- B. PAGE BODY (Lists, Forms, Dashboard)                                -->
+      <!-- ===================================================================== -->
+      <div class="page-body" id="page-body">
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- VIEW 1: SUBSCRIPTION LIST VIEW (Frappe Standard List)             -->
+        <!-- ----------------------------------------------------------------- -->
+        <div class="frappe-view active" id="view-subscription-list">
+          <!-- Frappe Filter Bar -->
+          <div class="frappe-filter-bar">
+            <div class="filter-inputs-group">
+              <div class="frappe-search-input-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="sub-list-search" placeholder="Search by ID, Customer or Plan...">
+              </div>
+
+              <!-- Status Dropdown Filter -->
+              <select class="frappe-select-filter" id="filter-sub-status">
+                <option value="all">Status: All</option>
+                <option value="Active">Status: Active</option>
+                <option value="Quotation">Status: Quotation</option>
+                <option value="Confirmed">Status: Confirmed</option>
+                <option value="Overdue">Status: Overdue</option>
+                <option value="Paused">Status: Paused</option>
+                <option value="Closed">Status: Closed</option>
+              </select>
+
+              <!-- Plan Dropdown Filter -->
+              <select class="frappe-select-filter" id="filter-sub-plan">
+                <option value="all">Plan: All Plans</option>
+                <option value="PLAN-PRO-ODOO">Professional (Odoo Powered)</option>
+                <option value="PLAN-STARTER">Starter Business</option>
+                <option value="PLAN-ENTERPRISE">Enterprise Annual Contract</option>
+              </select>
+            </div>
+
+            <div class="list-view-switcher">
+              <span class="list-count-text" id="list-count-display">Showing 5 records</span>
+              <button class="frappe-btn frappe-btn-subtle btn-sm" id="btn-refresh-list" title="Reload List">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <!-- Frappe Standard List Table -->
+          <div class="frappe-list-card">
+            <table class="frappe-list-table" id="subscriptions-list-table">
+              <thead>
+                <tr>
+                  <th width="36"><input type="checkbox" id="select-all-subs" title="Select All"></th>
+                  <th width="150">ID</th>
+                  <th>Status</th>
+                  <th>Customer</th>
+                  <th>Plan & Products</th>
+                  <th>Frequency</th>
+                  <th>Next Billing</th>
+                  <th class="text-right">Amount</th>
+                  <th width="40"></th>
+                </tr>
+              </thead>
+              <tbody id="subscriptions-list-tbody">
+                <!-- Dynamically rendered -->
+              </tbody>
+            </table>
+
+            <!-- Frappe List Pagination Footer -->
+            <div class="frappe-list-footer">
+              <div class="list-pagination-info" id="sub-pagination-info">1 - 5 of 5</div>
+              <div class="list-pagination-btns">
+                <button class="frappe-btn frappe-btn-subtle btn-sm" disabled>&lsaquo; Prev</button>
+                <button class="frappe-btn frappe-btn-subtle btn-sm" disabled>Next &rsaquo;</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- VIEW 2: FRAPPE FORM VIEW (Customer Subscription DocType)         -->
+        <!-- ----------------------------------------------------------------- -->
+        <div class="frappe-view" id="view-subscription-form">
+          <div class="frappe-form-container">
+            <!-- Form Header Bar -->
+            <div class="form-header-bar">
+              <div class="form-status-indicator">
+                <span class="indicator-dot" id="form-doc-indicator-dot"></span>
+                <span class="indicator-label" id="form-doc-indicator-label">Active</span>
+              </div>
+              <div class="form-doc-title" id="form-doc-title">SUB-2026-00001</div>
+            </div>
+
+            <!-- Form Tabs (Frappe Style) -->
+            <div class="form-tabs">
+              <button class="form-tab active" data-tab="details">Details</button>
+              <button class="form-tab" data-tab="items">Items & Add-ons</button>
+              <button class="form-tab" data-tab="billing">Recurring & Taxes</button>
+              <button class="form-tab" data-tab="timeline">Activity Timeline</button>
+            </div>
+
+            <!-- TAB 1: DETAILS -->
+            <div class="form-tab-pane active" id="tab-pane-details">
+              <div class="frappe-form-section">
+                <div class="section-head">Subscription Overview</div>
+                <div class="form-grid-2">
+                  <div class="form-field">
+                    <label class="field-label">Naming Series</label>
+                    <input type="text" class="field-control" id="form-sub-id" readonly>
+                  </div>
+                  <div class="form-field">
+                    <label class="field-label">Customer <span class="req">*</span></label>
+                    <input type="text" class="field-control" id="form-sub-customer" required placeholder="e.g. John McCormick">
+                  </div>
+                  <div class="form-field">
+                    <label class="field-label">Subscription Plan <span class="req">*</span></label>
+                    <select class="field-control" id="form-sub-plan">
+                      <!-- Populated via JS -->
+                    </select>
+                  </div>
+                  <div class="form-field">
+                    <label class="field-label">Quotation Template</label>
+                    <select class="field-control" id="form-sub-template">
+                      <option value="">-- None (Custom Quote) --</option>
+                      <option value="TPL-PRO-ODOO">Pro Plan + Odoo Brand Add-on</option>
+                      <option value="TPL-ENTERPRISE">Enterprise Suite (Annual)</option>
+                      <option value="TPL-STARTER">Starter Monthly Business Pack</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="frappe-form-section">
+                <div class="section-head">Schedule & Validity</div>
+                <div class="form-grid-3">
+                  <div class="form-field">
+                    <label class="field-label">Start Date <span class="req">*</span></label>
+                    <input type="date" class="field-control" id="form-sub-start-date">
+                  </div>
+                  <div class="form-field">
+                    <label class="field-label">Expiry Date</label>
+                    <input type="date" class="field-control" id="form-sub-expiry-date">
+                  </div>
+                  <div class="form-field">
+                    <label class="field-label">Payment Terms</label>
+                    <select class="field-control" id="form-sub-terms">
+                      <option value="Net 15">Net 15 Days</option>
+                      <option value="Immediate">Immediate</option>
+                      <option value="Net 30">Net 30 Days</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 2: ITEMS & ADD-ONS (Frappe Child Table) -->
+            <div class="form-tab-pane" id="tab-pane-items">
+              <div class="frappe-form-section">
+                <div class="section-head-with-action">
+                  <div class="section-head">Subscription Line Items (Child Table)</div>
+                  <button class="frappe-btn frappe-btn-subtle btn-sm" id="btn-add-line-row">+ Add Row</button>
+                </div>
+                
+                <table class="frappe-child-table" id="form-items-table">
+                  <thead>
+                    <tr>
+                      <th width="30">#</th>
+                      <th>Product</th>
+                      <th>Variant (e.g. Odoo Brand +$560)</th>
+                      <th width="90">Qty</th>
+                      <th width="140">Rate ($)</th>
+                      <th width="140">Amount ($)</th>
+                      <th width="40"></th>
+                    </tr>
+                  </thead>
+                  <tbody id="form-items-tbody">
+                    <!-- Dynamic child table rows -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- TAB 3: RECURRING & TAXES -->
+            <div class="form-tab-pane" id="tab-pane-billing">
+              <div class="frappe-form-section">
+                <div class="section-head">Recurring Billing Settings</div>
+                <div class="form-grid-2">
+                  <div class="form-field">
+                    <label class="field-label">Billing Frequency</label>
+                    <input type="text" class="field-control" id="form-sub-frequency" readonly>
+                  </div>
+                  <div class="form-field">
+                    <label class="field-label">Next Scheduled Billing Date</label>
+                    <input type="date" class="field-control" id="form-sub-next-billing">
+                  </div>
+                </div>
+              </div>
+
+              <div class="frappe-form-section">
+                <div class="section-head">Totals & Tax Summary</div>
+                <div class="frappe-totals-box">
+                  <div class="totals-row">
+                    <span>Subtotal:</span>
+                    <strong id="form-tot-subtotal">$0.00</strong>
+                  </div>
+                  <div class="totals-row">
+                    <span>Discount Applied:</span>
+                    <span id="form-tot-discount" class="text-amber">-$0.00</span>
+                  </div>
+                  <div class="totals-row">
+                    <span>Standard VAT (18%):</span>
+                    <strong id="form-tot-tax">$0.00</strong>
+                  </div>
+                  <div class="totals-row grand-total">
+                    <span>Grand Total:</span>
+                    <strong id="form-tot-grand">$0.00</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- TAB 4: TIMELINE & AUDIT LOG -->
+            <div class="form-tab-pane" id="tab-pane-timeline">
+              <div class="frappe-timeline" id="form-timeline-list">
+                <!-- Audit logs rendered dynamically -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- VIEW 3: FINANCE ANALYTICS (Frappe Workspace / Dashboard)          -->
+        <!-- ----------------------------------------------------------------- -->
+        <div class="frappe-view" id="view-analytics">
+          
+          <!-- Number Cards (Frappe KPI Cards) -->
+          <div class="frappe-number-cards-grid">
+            <div class="frappe-number-card">
+              <div class="card-label">Monthly Recurring Revenue (MRR)</div>
+              <div class="card-value" id="kpi-frappe-mrr">$0.00</div>
+              <div class="card-subtext positive">+14.2% MoM growth</div>
+            </div>
+
+            <div class="frappe-number-card">
+              <div class="card-label">Active Subscriptions</div>
+              <div class="card-value" id="kpi-frappe-active">0</div>
+              <div class="card-subtext">0.8% churn rate</div>
+            </div>
+
+            <div class="frappe-number-card">
+              <div class="card-label">Total Cash Collections (30 Days)</div>
+              <div class="card-value" id="kpi-frappe-collections">$0.00</div>
+              <div class="card-subtext">Auto-reconciled with bank</div>
+            </div>
+
+            <div class="frappe-number-card alert">
+              <div class="card-label">Overdue Receivables</div>
+              <div class="card-value text-red" id="kpi-frappe-overdue">$0.00</div>
+              <div class="card-subtext" id="kpi-frappe-overdue-count">0 overdue invoices</div>
+            </div>
+          </div>
+
+          <!-- Billing Day Simulation Box -->
+          <div class="frappe-callout-card">
+            <div class="callout-content">
+              <div class="callout-tag">Cron Job Scheduler &bull; hooks.py</div>
+              <h3>Automated Recurring Billing Engine (Strict Idempotency Guard)</h3>
+              <p>
+                In a live business, typing invoices by hand is error-prone. Clicking <strong>Run Billing Day</strong> simulates the daily background cron:
+                it queries active subscriptions due for billing, validates idempotency keys, generates confirmed tax invoices, and advances renewal dates.
+              </p>
+              <div class="callout-badges">
+                <span class="frappe-pill-badge blue">SLA Response: <strong id="kpi-perf-latency">3.2 ms</strong></span>
+                <span class="frappe-pill-badge green">Idempotency Lock: Active</span>
+                <span class="frappe-pill-badge">Zero Double-Billing Enforced</span>
+              </div>
+            </div>
+            <div class="callout-actions">
+              <button class="frappe-btn frappe-btn-primary" id="btn-analytics-bill-now">Execute Billing Day</button>
+              <button class="frappe-btn frappe-btn-subtle" id="btn-reset-db">Reset Demo Data</button>
+            </div>
+          </div>
+
+          <!-- Split Dashboard Tables -->
+          <div class="frappe-dashboard-split">
+            <div class="frappe-box">
+              <div class="frappe-box-header">
+                <h4>Recent Generated Invoices</h4>
+                <a href="#" class="frappe-link" id="link-goto-invoices">View All Invoices &rarr;</a>
+              </div>
+              <table class="frappe-simple-table" id="analytics-invoices-table">
+                <thead><tr><th>Invoice</th><th>Customer</th><th>Grand Total</th><th>Status</th></tr></thead>
+                <tbody><!-- Dynamic --></tbody>
+              </table>
+            </div>
+
+            <div class="frappe-box">
+              <div class="frappe-box-header">
+                <h4>Plan Breakdown & MRR Share</h4>
+              </div>
+              <div id="analytics-plans-breakdown">
+                <!-- Dynamic -->
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- VIEW 4: BILLING & INVOICES (Frappe Invoice List)                  -->
+        <!-- ----------------------------------------------------------------- -->
+        <div class="frappe-view" id="view-billing">
+          <div class="frappe-filter-bar">
+            <div class="filter-inputs-group">
+              <div class="frappe-search-input-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input type="text" id="invoice-list-search" placeholder="Search by Invoice ID or Customer...">
+              </div>
+              <select class="frappe-select-filter" id="filter-invoice-status">
+                <option value="all">Status: All</option>
+                <option value="Confirmed">Confirmed (Unpaid)</option>
+                <option value="Paid">Paid</option>
+                <option value="Overdue">Overdue</option>
+              </select>
+            </div>
+            <button class="frappe-btn frappe-btn-primary" id="btn-quick-record-payment">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>Record Payment</span>
+            </button>
+          </div>
+
+          <div class="frappe-list-card">
+            <table class="frappe-list-table" id="invoices-list-table">
+              <thead>
+                <tr>
+                  <th width="150">Invoice ID</th>
+                  <th>Status</th>
+                  <th>Subscription</th>
+                  <th>Customer</th>
+                  <th>Billing Period</th>
+                  <th>Due Date</th>
+                  <th>Grand Total</th>
+                  <th>Balance Due</th>
+                  <th class="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="invoices-list-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- VIEW 5: PRODUCTS & PLANS                                         -->
+        <!-- ----------------------------------------------------------------- -->
+        <div class="frappe-view" id="view-products">
+          <div class="frappe-filter-bar">
+            <div class="section-title-sm">Subscription Plans & Brand Variant Pricing</div>
+            <button class="frappe-btn frappe-btn-primary" id="btn-new-plan">+ New Plan</button>
+          </div>
+
+          <div class="plans-cards-grid" id="plans-container">
+            <!-- Dynamically populated -->
+          </div>
+
+          <div class="frappe-list-card" style="margin-top: 24px;">
+            <div class="list-card-header">Products & Surcharge Matrix (e.g. Odoo brand +$560)</div>
+            <table class="frappe-list-table" id="products-matrix-table">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>Type</th>
+                  <th>Cost Rate</th>
+                  <th>Base Sales Rate</th>
+                  <th>Variant Surcharges</th>
+                </tr>
+              </thead>
+              <tbody id="products-matrix-tbody">
+                <!-- Dynamically populated -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- VIEW 6: DISCOUNT RULES                                           -->
+        <!-- ----------------------------------------------------------------- -->
+        <div class="frappe-view" id="view-discounts">
+          <div class="frappe-filter-bar">
+            <div>
+              <div class="section-title-sm">Admin Discount Rules</div>
+              <div class="text-muted" style="font-size:12px;">Only Admins can configure discount policies. Automatically evaluated during billing runs.</div>
+            </div>
+            <button class="frappe-btn frappe-btn-primary" id="btn-create-discount">+ New Discount Rule</button>
+          </div>
+
+          <div class="discounts-cards-grid" id="discounts-cards-container">
+            <!-- Dynamically populated -->
+          </div>
+        </div>
+
+        <!-- ----------------------------------------------------------------- -->
+        <!-- VIEW 7: CUSTOMER PORTAL                                          -->
+        <!-- ----------------------------------------------------------------- -->
+        <div class="frappe-view" id="view-portal">
+          <div class="portal-frappe-banner">
+            <div>
+              <h2>Customer Portal — <span id="portal-cust-name">Brooklyn Zoe</span></h2>
+              <div class="text-muted">Self-service dashboard: view active software subscriptions, pause/renew, and download official invoices.</div>
+            </div>
+            <span class="frappe-pill-badge blue">Data Isolation: Active</span>
+          </div>
+
+          <div class="frappe-dashboard-split" style="margin-top:20px;">
+            <div class="frappe-box">
+              <div class="frappe-box-header"><h4>My Subscriptions</h4></div>
+              <div id="portal-subs-container"><!-- Dynamic --></div>
+            </div>
+            <div class="frappe-box">
+              <div class="frappe-box-header"><h4>My Invoices & Receipts</h4></div>
+              <div id="portal-invs-container"><!-- Dynamic --></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 3. FRAPPE COMMAND PALETTE (AWESOME-BAR MODAL: Ctrl + K)                   -->
+  <!-- ========================================================================= -->
+  <div class="awesomebar-modal-overlay" id="awesomebar-modal">
+    <div class="awesomebar-dialog">
+      <div class="awesomebar-input-wrap">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="awesomebar-input" placeholder="Type a command or search...">
+        <kbd class="esc-badge">ESC</kbd>
+      </div>
+      <div class="awesomebar-results" id="awesomebar-results">
+        <!-- Injected via app.js -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================================= -->
+  <!-- 4. DIALOG MODALS (Frappe Standard Modals)                                 -->
+  <!-- ========================================================================= -->
+
+  <!-- Record Payment Dialog -->
+  <div class="frappe-modal-overlay" id="modal-payment-dialog">
+    <div class="frappe-modal">
+      <div class="modal-head">
+        <div class="modal-title">Record Payment Entry</div>
+        <button class="modal-close-btn" data-modal-close="modal-payment-dialog">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="frappe-payment-form">
+          <div class="form-field">
+            <label class="field-label">Against Invoice <span class="req">*</span></label>
+            <select class="field-control" id="dlg-pay-invoice" required>
+              <!-- Populated via JS -->
+            </select>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-field">
+              <label class="field-label">Payment Amount ($) <span class="req">*</span></label>
+              <input type="number" step="0.01" min="0.01" class="field-control" id="dlg-pay-amount" required>
+            </div>
+            <div class="form-field">
+              <label class="field-label">Payment Mode <span class="req">*</span></label>
+              <select class="field-control" id="dlg-pay-mode">
+                <option value="Bank Transfer">Bank Wire Transfer</option>
+                <option value="Credit Card">Credit Card</option>
+                <option value="UPI / Online">Instant Gateway / UPI</option>
+                <option value="Cash / Cheque">Cash / Cheque</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-field">
+            <label class="field-label">Reference / Note</label>
+            <input type="text" class="field-control" id="dlg-pay-note" placeholder="e.g. Wire TXN-893021">
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="frappe-btn frappe-btn-subtle" data-modal-close="modal-payment-dialog">Cancel</button>
+            <button type="submit" class="frappe-btn frappe-btn-primary">Reconcile & Save</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- New Discount Rule Dialog -->
+  <div class="frappe-modal-overlay" id="modal-discount-dialog">
+    <div class="frappe-modal">
+      <div class="modal-head">
+        <div class="modal-title">New Discount Rule</div>
+        <button class="modal-close-btn" data-modal-close="modal-discount-dialog">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="frappe-discount-form">
+          <div class="form-field">
+            <label class="field-label">Rule Name <span class="req">*</span></label>
+            <input type="text" class="field-control" id="dlg-disc-name" required placeholder="e.g. End of Quarter 15% Off">
+          </div>
+          <div class="form-grid-2">
+            <div class="form-field">
+              <label class="field-label">Type</label>
+              <select class="field-control" id="dlg-disc-type">
+                <option value="Percentage">Percentage (%)</option>
+                <option value="Fixed Amount">Fixed Amount ($)</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="field-label">Discount Value <span class="req">*</span></label>
+              <input type="number" step="0.01" class="field-control" id="dlg-disc-val" required placeholder="15">
+            </div>
+          </div>
+          <div class="form-grid-2">
+            <div class="form-field">
+              <label class="field-label">Applies To</label>
+              <select class="field-control" id="dlg-disc-scope">
+                <option value="Whole Subscription">Whole Subscription</option>
+                <option value="Specific Products">Specific Products Only</option>
+              </select>
+            </div>
+            <div class="form-field">
+              <label class="field-label">Min Purchase Amount ($)</label>
+              <input type="number" class="field-control" id="dlg-disc-min" value="0">
+            </div>
+          </div>
+          <div class="form-grid-3">
+            <div class="form-field">
+              <label class="field-label">Valid From</label>
+              <input type="date" class="field-control" id="dlg-disc-start" required>
+            </div>
+            <div class="form-field">
+              <label class="field-label">Valid To</label>
+              <input type="date" class="field-control" id="dlg-disc-end" required>
+            </div>
+            <div class="form-field">
+              <label class="field-label">Usage Limit (0=∞)</label>
+              <input type="number" class="field-control" id="dlg-disc-limit" value="50">
+            </div>
+          </div>
+          <div class="modal-actions">
+            <button type="button" class="frappe-btn frappe-btn-subtle" data-modal-close="modal-discount-dialog">Cancel</button>
+            <button type="submit" class="frappe-btn frappe-btn-primary">Save Rule</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- Printable Invoice Preview Dialog -->
+  <div class="frappe-modal-overlay" id="modal-invoice-preview">
+    <div class="frappe-modal modal-lg">
+      <div class="modal-head">
+        <div class="modal-title">Tax Invoice Preview</div>
+        <button class="modal-close-btn" data-modal-close="modal-invoice-preview">&times;</button>
+      </div>
+      <div class="modal-body" id="invoice-preview-container">
+        <!-- Injected via JS -->
+      </div>
+      <div class="modal-actions">
+        <button type="button" class="frappe-btn frappe-btn-subtle" data-modal-close="modal-invoice-preview">Close</button>
+        <button type="button" class="frappe-btn frappe-btn-primary" onclick="window.print()">Print / PDF</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div class="frappe-toast-container" id="frappe-toasts"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
