@@ -2,12 +2,27 @@
 
 import React, { useState, useEffect } from "react";
 import { useBrightloop } from "@/context/brightloop-context";
-import { Dialog, DialogHeader, DialogTitle, DialogDescription, DialogBody, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { fmtCurr } from "@/lib/utils";
-import { X, CreditCard } from "lucide-react";
+import { CheckCircle2 } from "lucide-react";
 
 export const PaymentDialog: React.FC = () => {
   const {
@@ -28,7 +43,9 @@ export const PaymentDialog: React.FC = () => {
 
   useEffect(() => {
     if (paymentModalOpen) {
-      const activeId = selectedPaymentInvoiceId || (unpaidInvoices.length > 0 ? unpaidInvoices[0].id : "");
+      const activeId =
+        selectedPaymentInvoiceId ||
+        (unpaidInvoices.length > 0 ? unpaidInvoices[0].id : "");
       setInvoiceId(activeId);
       const inv = state.invoices.find((i) => i.id === activeId);
       if (inv) {
@@ -36,7 +53,12 @@ export const PaymentDialog: React.FC = () => {
       }
       setNote("");
     }
-  }, [paymentModalOpen, selectedPaymentInvoiceId, unpaidInvoices, state.invoices]);
+  }, [
+    paymentModalOpen,
+    selectedPaymentInvoiceId,
+    unpaidInvoices,
+    state.invoices,
+  ]);
 
   const handleInvoiceChange = (newId: string) => {
     setInvoiceId(newId);
@@ -60,113 +82,116 @@ export const PaymentDialog: React.FC = () => {
 
   return (
     <Dialog open={paymentModalOpen} onOpenChange={setPaymentModalOpen}>
-      <form onSubmit={handleSubmit}>
-        <DialogHeader>
-          <div className="flex items-center space-x-2">
-            <CreditCard className="w-5 h-5 text-emerald-600" />
+      <DialogContent className="sm:max-w-[480px]">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <DialogHeader>
             <DialogTitle>Record Payment Entry</DialogTitle>
-          </div>
-          <button
-            type="button"
-            onClick={() => setPaymentModalOpen(false)}
-            className="text-muted-foreground hover:text-foreground rounded-full p-1"
-          >
-            <X className="w-4 h-4" />
-          </button>
-        </DialogHeader>
+            <DialogDescription>
+              Reconcile incoming customer payments against outstanding subscription invoices.
+            </DialogDescription>
+          </DialogHeader>
 
-        <DialogBody>
           {unpaidInvoices.length === 0 ? (
-            <div className="text-center py-6 text-sm text-muted-foreground">
-              All invoices are currently paid in full! No outstanding receivables.
-            </div>
+            <Alert>
+              <CheckCircle2 className="h-4 w-4" />
+              <AlertTitle>All Caught Up</AlertTitle>
+              <AlertDescription>
+                All invoices are currently paid in full. There are no outstanding receivables.
+              </AlertDescription>
+            </Alert>
           ) : (
-            <>
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  Against Invoice <span className="text-destructive">*</span>
-                </label>
-                <Select
-                  value={invoiceId}
-                  onChange={(e) => handleInvoiceChange(e.target.value)}
-                  required
-                >
-                  {unpaidInvoices.map((inv) => (
-                    <option key={inv.id} value={inv.id}>
-                      {inv.id} — {inv.customer_name} (Due: {fmtCurr(inv.outstanding_amount)})
-                    </option>
-                  ))}
+            <div className="grid gap-4 py-2">
+              <div className="grid gap-2">
+                <Label>Against Invoice</Label>
+                <Select value={invoiceId} onValueChange={handleInvoiceChange}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select invoice" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {unpaidInvoices.map((inv) => (
+                      <SelectItem key={inv.id} value={inv.id}>
+                        {inv.id} — {inv.customer_name} (Due:{" "}
+                        {fmtCurr(inv.outstanding_amount)})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
                 {selectedInv && (
                   <p className="text-xs text-muted-foreground">
-                    Total Invoice Amount: {fmtCurr(selectedInv.grand_total)} | Already Paid: {fmtCurr(selectedInv.paid_amount)}
+                    Total Invoice Amount: {fmtCurr(selectedInv.grand_total)} |
+                    Already Paid: {fmtCurr(selectedInv.paid_amount)}
                   </p>
                 )}
               </div>
 
               <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Payment Amount ($) <span className="text-destructive">*</span>
-                  </label>
+                <div className="grid gap-2">
+                  <Label htmlFor="payment-amount">Payment Amount ($)</Label>
                   <Input
+                    id="payment-amount"
                     type="number"
                     step="0.01"
                     min="0.01"
-                    max={selectedInv ? selectedInv.outstanding_amount : undefined}
+                    max={
+                      selectedInv ? selectedInv.outstanding_amount : undefined
+                    }
                     value={amount}
                     onChange={(e) => setAmount(parseFloat(e.target.value) || 0)}
                     required
                   />
                 </div>
 
-                <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                    Payment Mode <span className="text-destructive">*</span>
-                  </label>
-                  <Select
-                    value={method}
-                    onChange={(e) => setMethod(e.target.value)}
-                    required
-                  >
-                    <option value="Credit Card">Credit Card</option>
-                    <option value="Bank Transfer">Bank Wire Transfer</option>
-                    <option value="Instant Gateway / UPI">Instant Gateway / UPI</option>
-                    <option value="Cash / Cheque">Cash / Cheque</option>
+                <div className="grid gap-2">
+                  <Label>Payment Mode</Label>
+                  <Select value={method} onValueChange={setMethod}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select method" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Credit Card">Credit Card</SelectItem>
+                      <SelectItem value="Bank Transfer">
+                        Bank Wire Transfer
+                      </SelectItem>
+                      <SelectItem value="Instant Gateway / UPI">
+                        Instant Gateway / UPI
+                      </SelectItem>
+                      <SelectItem value="Cash / Cheque">
+                        Cash / Cheque
+                      </SelectItem>
+                    </SelectContent>
                   </Select>
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+              <div className="grid gap-2">
+                <Label htmlFor="payment-note">
                   Reference / Transaction Note
-                </label>
+                </Label>
                 <Input
+                  id="payment-note"
                   type="text"
                   placeholder="e.g. Stripe TXN-948210 / Wire REF-771"
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                 />
               </div>
-            </>
+            </div>
           )}
-        </DialogBody>
 
-        <DialogFooter>
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setPaymentModalOpen(false)}
-          >
-            Cancel
-          </Button>
-          {unpaidInvoices.length > 0 && (
-            <Button type="submit" variant="blue">
-              Reconcile & Save Payment
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setPaymentModalOpen(false)}
+            >
+              Cancel
             </Button>
-          )}
-        </DialogFooter>
-      </form>
+            {unpaidInvoices.length > 0 && (
+              <Button type="submit">Reconcile &amp; Save Payment</Button>
+            )}
+          </DialogFooter>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 };

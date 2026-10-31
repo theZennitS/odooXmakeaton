@@ -4,6 +4,33 @@ import React, { useState } from "react";
 import { useBrightloop } from "@/context/brightloop-context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Progress } from "@/components/ui/progress";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 import { fmtCurr } from "@/lib/utils";
 import {
   TrendingUp,
@@ -12,9 +39,7 @@ import {
   AlertTriangle,
   Zap,
   RotateCcw,
-  Clock,
   ArrowRight,
-  ShieldCheck,
   CheckCircle2,
 } from "lucide-react";
 
@@ -31,7 +56,6 @@ export const AnalyticsView: React.FC = () => {
 
   const activeSubs = state.subscriptions.filter((s) => s.status === "Active");
 
-  // Calculate MRR accurately across frequencies
   let mrr = 0.0;
   activeSubs.forEach((s) => {
     if (s.frequency === "Daily") mrr += s.grand_total * 30;
@@ -45,19 +69,17 @@ export const AnalyticsView: React.FC = () => {
   const overdueInvoices = state.invoices.filter(
     (i) =>
       i.status === "Overdue" ||
-      (new Date(i.due_date) < new Date("2026-10-31") && i.outstanding_amount > 0)
+      (new Date(i.due_date) < new Date("2026-10-31") &&
+        i.outstanding_amount > 0)
   );
-  const overdueAmount = overdueInvoices.reduce((sum, i) => sum + i.outstanding_amount, 0);
+  const overdueAmount = overdueInvoices.reduce(
+    (sum, i) => sum + i.outstanding_amount,
+    0
+  );
 
   const handleSimulate = () => {
     const res = triggerBillingDay();
     setLatency(res.latency);
-  };
-
-  const handleReset = () => {
-    if (window.confirm("Restore Brightloop Frappe database to default clean demo fixtures?")) {
-      resetDatabase();
-    }
   };
 
   return (
@@ -73,217 +95,241 @@ export const AnalyticsView: React.FC = () => {
           </p>
         </div>
 
-        <div className="flex items-center space-x-2">
-          <Button
-            onClick={handleReset}
-            variant="outline"
-            size="sm"
-            className="gap-1 text-xs h-8"
-          >
-            <RotateCcw className="w-3.5 h-3.5" />
-            <span>Reset Demo DB</span>
-          </Button>
-          <Button
-            onClick={handleSimulate}
-            variant="blue"
-            size="sm"
-            className="gap-1 text-xs h-8"
-          >
-            <Zap className="w-3.5 h-3.5" />
+        <div className="flex items-center gap-2">
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8 text-xs">
+                <RotateCcw className="h-3.5 w-3.5" />
+                <span>Reset Demo DB</span>
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Reset Demo Database?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  This will restore all subscriptions, invoices, payments, and discount rules back to the clean initial demo fixtures.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={() => resetDatabase()}>
+                  Restore Fixtures
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+
+          <Button onClick={handleSimulate} size="sm" className="h-8 text-xs">
+            <Zap className="h-3.5 w-3.5" />
             <span>Execute Billing Day</span>
           </Button>
         </div>
       </div>
 
-      {/* 4 Frappe KPI Number Cards */}
+      {/* 4 Official shadcn KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {/* MRR Card */}
-        <div className="p-4 rounded-xl border bg-card shadow-xs space-y-1">
-          <div className="flex items-center justify-between text-xs text-muted-foreground font-medium">
-            <span>Monthly Recurring Revenue (MRR)</span>
-            <TrendingUp className="w-4 h-4 text-blue-600" />
-          </div>
-          <div className="text-2xl font-extrabold text-foreground font-mono">
-            {fmtCurr(mrr)}
-          </div>
-          <div className="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
-            <span>+14.2% MoM subscription growth</span>
-          </div>
-        </div>
-
-        {/* Active Subscriptions Card */}
-        <div className="p-4 rounded-xl border bg-card shadow-xs space-y-1">
-          <div className="flex items-center justify-between text-xs text-muted-foreground font-medium">
-            <span>Active Subscriptions</span>
-            <Users className="w-4 h-4 text-indigo-600" />
-          </div>
-          <div className="text-2xl font-extrabold text-foreground font-mono">
-            {activeSubs.length}
-          </div>
-          <div className="text-[11px] text-muted-foreground">
-            <span>0.8% estimated churn rate</span>
-          </div>
-        </div>
-
-        {/* Total Cash Collections */}
-        <div className="p-4 rounded-xl border bg-card shadow-xs space-y-1">
-          <div className="flex items-center justify-between text-xs text-muted-foreground font-medium">
-            <span>Total Cash Collections</span>
-            <CreditCard className="w-4 h-4 text-emerald-600" />
-          </div>
-          <div className="text-2xl font-extrabold text-emerald-600 font-mono">
-            {fmtCurr(totalCollected)}
-          </div>
-          <div className="text-[11px] text-muted-foreground">
-            <span>Reconciled across {state.payments.length} transaction entries</span>
-          </div>
-        </div>
-
-        {/* Overdue Receivables */}
-        <div className="p-4 rounded-xl border bg-card shadow-xs space-y-1 border-red-200 bg-red-50/20">
-          <div className="flex items-center justify-between text-xs text-muted-foreground font-medium">
-            <span>Overdue Receivables</span>
-            <AlertTriangle className="w-4 h-4 text-destructive" />
-          </div>
-          <div className="text-2xl font-extrabold text-destructive font-mono">
-            {fmtCurr(overdueAmount)}
-          </div>
-          <div className="text-[11px] text-destructive font-medium">
-            <span>{overdueInvoices.length} overdue invoice(s) pending</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Callout Card: Scheduled Automated Billing Simulation */}
-      <div className="p-5 border rounded-xl bg-gradient-to-r from-blue-50/80 via-indigo-50/50 to-background border-blue-200/80 shadow-xs space-y-4">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="space-y-1.5 max-w-2xl">
-            <div className="flex items-center space-x-2">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-blue-700 bg-blue-100/80 px-2 py-0.5 rounded-full">
-                Cron Engine &bull; hooks.py
-              </span>
-              <span className="text-[10px] font-medium text-emerald-700 bg-emerald-100/80 px-2 py-0.5 rounded-full flex items-center gap-1">
-                <CheckCircle2 className="w-2.5 h-2.5" /> SLA: <strong>{latency} ms</strong> (&lt; 2000 ms SLA)
-              </span>
-            </div>
-            <h3 className="font-bold text-base text-foreground">
-              Automated Recurring Billing Engine (Strict Idempotency Guard)
-            </h3>
-            <p className="text-xs text-muted-foreground leading-relaxed">
-              In production, manually issuing subscriptions is prone to human error. Clicking{" "}
-              <strong>Execute Billing Day</strong> runs the automated recurring cron: it queries active subscriptions due for billing, validates idempotency keys, generates confirmed tax invoices, and advances renewal intervals with zero double-billing.
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-medium text-muted-foreground">
+              Monthly Recurring Revenue
+            </CardTitle>
+            <TrendingUp className="h-4 w-4 text-primary" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold font-mono">{fmtCurr(mrr)}</div>
+            <p className="text-[11px] text-emerald-600 font-medium mt-1">
+              +14.2% MoM subscription growth
             </p>
-          </div>
+          </CardContent>
+        </Card>
 
-          <div className="flex sm:flex-col gap-2 shrink-0">
-            <Button onClick={handleSimulate} variant="blue" className="gap-1.5 text-xs">
-              <Zap className="w-4 h-4" />
-              <span>Execute Billing Day</span>
-            </Button>
-            <Button onClick={handleReset} variant="outline" className="gap-1.5 text-xs bg-background">
-              <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset Data</span>
-            </Button>
-          </div>
-        </div>
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-medium text-muted-foreground">
+              Active Subscriptions
+            </CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold font-mono">
+              {activeSubs.length}
+            </div>
+            <p className="text-[11px] text-muted-foreground mt-1">
+              0.8% estimated churn rate
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-medium text-muted-foreground">
+              Total Cash Collections
+            </CardTitle>
+            <CreditCard className="h-4 w-4 text-emerald-600" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-emerald-600 font-mono">
+              {fmtCurr(totalCollected)}
+            </div>
+            <p className="text-[11px] text-muted-foreground mt-1">
+              Reconciled across {state.payments.length} entries
+            </p>
+          </CardContent>
+        </Card>
+
+        <Card className="border-destructive/30">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-xs font-medium text-muted-foreground">
+              Overdue Receivables
+            </CardTitle>
+            <AlertTriangle className="h-4 w-4 text-destructive" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-destructive font-mono">
+              {fmtCurr(overdueAmount)}
+            </div>
+            <p className="text-[11px] text-destructive font-medium mt-1">
+              {overdueInvoices.length} overdue invoice(s) pending
+            </p>
+          </CardContent>
+        </Card>
       </div>
 
-      {/* Split Tables */}
+      {/* Scheduled Automated Billing Simulation Card */}
+      <Card>
+        <CardHeader className="pb-3">
+          <div className="flex flex-wrap items-center gap-2 mb-1">
+            <Badge variant="secondary" className="text-[10px]">
+              Cron Engine &bull; hooks.py
+            </Badge>
+            <Badge variant="outline" className="text-[10px] gap-1">
+              <CheckCircle2 className="h-3 w-3 text-emerald-600" />
+              SLA: {latency} ms (&lt; 2000 ms SLA)
+            </Badge>
+          </div>
+          <CardTitle className="text-base">
+            Automated Recurring Billing Engine (Strict Idempotency Guard)
+          </CardTitle>
+          <CardDescription className="text-xs leading-relaxed max-w-3xl">
+            Clicking <strong>Execute Billing Day</strong> runs the automated recurring cron: it queries active subscriptions due for billing, validates idempotency keys, generates confirmed tax invoices, and advances renewal intervals with zero double-billing.
+          </CardDescription>
+        </CardHeader>
+      </Card>
+
+      {/* Split Cards: Recent Invoices Table + Plan Breakdown Progress */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        {/* Recent Invoices */}
-        <div className="p-5 border rounded-xl bg-card shadow-xs space-y-3">
-          <div className="flex items-center justify-between border-b pb-2">
-            <h3 className="font-bold text-sm text-foreground">Recent Invoices</h3>
-            <button
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <div>
+              <CardTitle className="text-sm">Recent Invoices</CardTitle>
+              <CardDescription className="text-xs">
+                Click any row to inspect or print tax invoice.
+              </CardDescription>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => navigateTo("billing")}
-              className="text-xs text-blue-600 hover:underline flex items-center gap-1"
+              className="h-8 text-xs"
             >
               <span>View All</span>
-              <ArrowRight className="w-3 h-3" />
-            </button>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-xs">
-              <thead className="bg-muted/30 border-b">
-                <tr>
-                  <th className="p-2 text-left font-semibold text-muted-foreground">Invoice</th>
-                  <th className="p-2 text-left font-semibold text-muted-foreground">Customer</th>
-                  <th className="p-2 text-right font-semibold text-muted-foreground">Grand Total</th>
-                  <th className="p-2 text-right font-semibold text-muted-foreground">Status</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y">
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="pl-6">Invoice</TableHead>
+                  <TableHead>Customer</TableHead>
+                  <TableHead className="text-right">Grand Total</TableHead>
+                  <TableHead className="text-right pr-6">Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {state.invoices.slice(0, 5).map((inv) => (
-                  <tr
+                  <TableRow
                     key={inv.id}
                     onClick={() => setPreviewInvoice(inv)}
-                    className="hover:bg-muted/40 cursor-pointer transition-colors"
+                    className="cursor-pointer"
                   >
-                    <td className="p-2 font-mono font-medium text-blue-600">{inv.id}</td>
-                    <td className="p-2 text-foreground font-medium">{inv.customer_name}</td>
-                    <td className="p-2 text-right font-mono font-semibold">
+                    <TableCell className="pl-6 font-mono font-medium text-xs text-primary">
+                      {inv.id}
+                    </TableCell>
+                    <TableCell className="font-medium text-xs">
+                      {inv.customer_name}
+                    </TableCell>
+                    <TableCell className="text-right font-mono font-semibold text-xs">
                       {fmtCurr(inv.grand_total)}
-                    </td>
-                    <td className="p-2 text-right">
+                    </TableCell>
+                    <TableCell className="text-right pr-6">
                       <Badge
                         variant={
                           inv.status === "Paid"
-                            ? "success"
+                            ? "default"
                             : inv.status === "Overdue"
                             ? "destructive"
-                            : "info"
+                            : "secondary"
                         }
                         className="text-[10px]"
                       >
                         {inv.status}
                       </Badge>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
 
-        {/* Plan Breakdown & MRR Share */}
-        <div className="p-5 border rounded-xl bg-card shadow-xs space-y-3">
-          <div className="flex items-center justify-between border-b pb-2">
-            <h3 className="font-bold text-sm text-foreground">Plan Breakdown &amp; Active Subscriptions</h3>
-            <button
+        {/* Plan Breakdown & MRR Share using official shadcn Progress */}
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+            <div>
+              <CardTitle className="text-sm">
+                Plan Breakdown &amp; Active Subscriptions
+              </CardTitle>
+              <CardDescription className="text-xs">
+                Distribution across active recurring contracts.
+              </CardDescription>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={() => navigateTo("products")}
-              className="text-xs text-blue-600 hover:underline flex items-center gap-1"
+              className="h-8 text-xs"
             >
               <span>Plans Catalog</span>
-              <ArrowRight className="w-3 h-3" />
-            </button>
-          </div>
-
-          <div className="space-y-3 pt-1">
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Button>
+          </CardHeader>
+          <CardContent className="space-y-4 pt-2">
             {state.plans.map((p) => {
               const count = activeSubs.filter((s) => s.plan_id === p.id).length;
-              const percentage = activeSubs.length > 0 ? Math.round((count / activeSubs.length) * 100) : 0;
+              const percentage =
+                activeSubs.length > 0
+                  ? Math.round((count / activeSubs.length) * 100)
+                  : 0;
               return (
                 <div key={p.id} className="space-y-1.5">
                   <div className="flex justify-between text-xs">
                     <span className="font-medium text-foreground">
-                      {p.name} <span className="text-muted-foreground font-normal">({p.frequency})</span>
+                      {p.name}{" "}
+                      <span className="text-muted-foreground font-normal">
+                        ({p.frequency})
+                      </span>
                     </span>
-                    <span className="font-bold text-foreground">
+                    <span className="font-semibold font-mono text-foreground">
                       {count} active ({percentage}%)
                     </span>
                   </div>
-                  <div className="w-full h-2 bg-muted rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-blue-600 rounded-full transition-all duration-300"
-                      style={{ width: `${percentage}%` }}
-                    />
-                  </div>
+                  <Progress value={percentage} className="h-2" />
                 </div>
               );
             })}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

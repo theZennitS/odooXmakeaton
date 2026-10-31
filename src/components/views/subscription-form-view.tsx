@@ -5,8 +5,39 @@ import { useBrightloop } from "@/context/brightloop-context";
 import { Subscription, SubscriptionItem, SubscriptionStatus } from "@/types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { fmtCurr } from "@/lib/utils";
 import {
@@ -14,11 +45,12 @@ import {
   Save,
   Plus,
   Trash2,
-  Calendar,
-  Clock,
-  CheckCircle2,
-  AlertCircle,
+  ChevronDown,
   Zap,
+  Play,
+  Pause,
+  XCircle,
+  CheckCircle2,
 } from "lucide-react";
 
 export const SubscriptionFormView: React.FC = () => {
@@ -45,20 +77,23 @@ export const SubscriptionFormView: React.FC = () => {
 
   if (!formData) {
     return (
-      <div className="p-8 text-center text-muted-foreground">
-        <p>No subscription document selected.</p>
-        <Button
-          variant="outline"
-          onClick={() => navigateTo("subscriptions", "list")}
-          className="mt-4"
-        >
-          Back to Subscriptions
-        </Button>
-      </div>
+      <Card className="p-8 text-center">
+        <CardContent className="space-y-4 pt-6">
+          <p className="text-sm text-muted-foreground">
+            No subscription document selected.
+          </p>
+          <Button
+            variant="outline"
+            onClick={() => navigateTo("subscriptions", "list")}
+          >
+            Back to Subscriptions
+          </Button>
+        </CardContent>
+      </Card>
     );
   }
 
-  const handleFieldChange = (field: keyof Subscription, val: any) => {
+  const handleFieldChange = (field: keyof Subscription, val: unknown) => {
     setFormData((prev) => (prev ? { ...prev, [field]: val } : null));
   };
 
@@ -110,7 +145,7 @@ export const SubscriptionFormView: React.FC = () => {
     const newItem: SubscriptionItem = {
       product_id: "PROD-02",
       product_name: "Advanced Analytics & BI Add-on",
-      variant_name: "",
+      variant_name: "Standard Edition",
       quantity: 1,
       unit_price: 120.0,
       subtotal: 120.0,
@@ -160,21 +195,23 @@ export const SubscriptionFormView: React.FC = () => {
       return;
     }
     updateSubStatus(formData.id, action as SubscriptionStatus);
-    setFormData((prev) => (prev ? { ...prev, status: action as SubscriptionStatus } : null));
+    setFormData((prev) =>
+      prev ? { ...prev, status: action as SubscriptionStatus } : null
+    );
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "Active":
-        return <Badge variant="success">Active</Badge>;
+        return <Badge variant="default">Active</Badge>;
       case "Quotation":
-        return <Badge variant="warning">Quotation</Badge>;
+        return <Badge variant="secondary">Quotation</Badge>;
       case "Confirmed":
-        return <Badge variant="info">Confirmed</Badge>;
+        return <Badge variant="secondary">Confirmed</Badge>;
       case "Overdue":
         return <Badge variant="destructive">Overdue</Badge>;
       case "Paused":
-        return <Badge variant="secondary">Paused</Badge>;
+        return <Badge variant="outline">Paused</Badge>;
       case "Closed":
         return <Badge variant="outline">Closed</Badge>;
       default:
@@ -186,318 +223,466 @@ export const SubscriptionFormView: React.FC = () => {
     <div className="space-y-6 max-w-5xl mx-auto pb-12">
       {/* Top Action Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b">
-        <div className="flex items-center space-x-3">
+        <div className="flex items-center gap-3">
           <Button
             variant="outline"
             size="sm"
             onClick={() => navigateTo("subscriptions", "list")}
-            className="gap-1 h-8 text-xs"
+            className="h-8 text-xs"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
+            <ArrowLeft className="h-3.5 w-3.5" />
             <span>Back</span>
           </Button>
           <div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center gap-2">
               <h1 className="text-xl font-bold font-mono tracking-tight text-foreground">
                 {formData.id}
               </h1>
               {getStatusBadge(formData.status)}
             </div>
-            <p className="text-xs text-muted-foreground">{formData.customer_name} &bull; {formData.plan_name}</p>
+            <p className="text-xs text-muted-foreground">
+              {formData.customer_name} &bull; {formData.plan_name}
+            </p>
           </div>
         </div>
 
-        <div className="flex items-center space-x-2">
-          {/* Action State Transition Dropdown */}
-          <Select
-            value=""
-            onChange={(e) => {
-              if (e.target.value) handleAction(e.target.value);
-            }}
-            className="h-8 text-xs w-36 bg-background"
-          >
-            <option value="">Actions ▾</option>
-            {formData.status === "Draft" && <option value="Quotation">Submit Quotation</option>}
-            {formData.status === "Quotation" && <option value="Confirmed">Confirm Contract</option>}
-            {formData.status === "Confirmed" && <option value="Active">Activate Subscription</option>}
-            {formData.status === "Active" && (
-              <>
-                <option value="Paused">Pause Subscription</option>
-                <option value="Closed">Cancel / Close</option>
-                <option value="BillNow">Bill Immediately</option>
-              </>
-            )}
-            {formData.status === "Paused" && <option value="Active">Resume Active</option>}
-          </Select>
+        <div className="flex items-center gap-2">
+          {/* Official shadcn DropdownMenu for Lifecycle State Transitions */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8 text-xs">
+                <span>Actions</span>
+                <ChevronDown className="h-3.5 w-3.5 opacity-60" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-48">
+              <DropdownMenuLabel className="text-xs">
+                Lifecycle Transitions
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              {formData.status === "Draft" && (
+                <DropdownMenuItem onClick={() => handleAction("Quotation")}>
+                  <CheckCircle2 className="h-4 w-4" />
+                  <span>Submit Quotation</span>
+                </DropdownMenuItem>
+              )}
+              {formData.status === "Quotation" && (
+                <DropdownMenuItem onClick={() => handleAction("Confirmed")}>
+                  <CheckCircle2 className="h-4 w-4" />
+                  <span>Confirm Contract</span>
+                </DropdownMenuItem>
+              )}
+              {formData.status === "Confirmed" && (
+                <DropdownMenuItem onClick={() => handleAction("Active")}>
+                  <Play className="h-4 w-4" />
+                  <span>Activate Subscription</span>
+                </DropdownMenuItem>
+              )}
+              {formData.status === "Active" && (
+                <>
+                  <DropdownMenuItem onClick={() => handleAction("BillNow")}>
+                    <Zap className="h-4 w-4" />
+                    <span>Bill Immediately</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => handleAction("Paused")}>
+                    <Pause className="h-4 w-4" />
+                    <span>Pause Subscription</span>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    onClick={() => handleAction("Closed")}
+                    className="text-destructive focus:text-destructive"
+                  >
+                    <XCircle className="h-4 w-4" />
+                    <span>Cancel / Close</span>
+                  </DropdownMenuItem>
+                </>
+              )}
+              {formData.status === "Paused" && (
+                <DropdownMenuItem onClick={() => handleAction("Active")}>
+                  <Play className="h-4 w-4" />
+                  <span>Resume Active</span>
+                </DropdownMenuItem>
+              )}
+              {formData.status === "Closed" && (
+                <DropdownMenuItem onClick={() => handleAction("Quotation")}>
+                  <Play className="h-4 w-4" />
+                  <span>Reopen as Quotation</span>
+                </DropdownMenuItem>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-          <Button onClick={handleSave} variant="blue" size="sm" className="h-8 gap-1 text-xs">
-            <Save className="w-3.5 h-3.5" />
+          <Button onClick={handleSave} size="sm" className="h-8 text-xs">
+            <Save className="h-3.5 w-3.5" />
             <span>Save</span>
           </Button>
         </div>
       </div>
 
-      {/* Tabs */}
+      {/* Official shadcn Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList className="bg-muted/60">
+        <TabsList>
           <TabsTrigger value="details">Details</TabsTrigger>
-          <TabsTrigger value="items">Items &amp; Add-ons ({formData.items.length})</TabsTrigger>
+          <TabsTrigger value="items">
+            Items &amp; Add-ons ({formData.items.length})
+          </TabsTrigger>
           <TabsTrigger value="billing">Recurring &amp; Taxes</TabsTrigger>
-          <TabsTrigger value="timeline">Activity Timeline ({formData.timeline?.length || 0})</TabsTrigger>
+          <TabsTrigger value="timeline">
+            Activity Timeline ({formData.timeline?.length || 0})
+          </TabsTrigger>
         </TabsList>
 
         {/* TAB 1: DETAILS */}
         <TabsContent value="details" className="space-y-6">
-          <div className="p-5 border rounded-xl bg-card space-y-4 shadow-2xs">
-            <h3 className="font-semibold text-sm border-b pb-2 text-foreground">Subscription Overview</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-              <div className="space-y-1.5">
-                <label className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">
-                  Naming Series / ID
-                </label>
-                <Input value={formData.id} readOnly className="bg-muted/40 font-mono" />
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">Subscription Overview</CardTitle>
+              <CardDescription className="text-xs">
+                Core customer, naming series, and plan binding information.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="doc-id">Naming Series / ID</Label>
+                <Input
+                  id="doc-id"
+                  value={formData.id}
+                  readOnly
+                  className="bg-muted/40 font-mono"
+                />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">
-                  Customer Name <span className="text-destructive">*</span>
-                </label>
+              <div className="grid gap-2">
+                <Label htmlFor="cust-name">Customer Name</Label>
                 <Input
+                  id="cust-name"
                   value={formData.customer_name}
-                  onChange={(e) => handleFieldChange("customer_name", e.target.value)}
+                  onChange={(e) =>
+                    handleFieldChange("customer_name", e.target.value)
+                  }
                   placeholder="e.g. John McCormick"
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">
-                  Subscription Plan <span className="text-destructive">*</span>
-                </label>
+              <div className="grid gap-2">
+                <Label>Subscription Plan</Label>
                 <Select
                   value={formData.plan_id}
-                  onChange={(e) => handlePlanChange(e.target.value)}
+                  onValueChange={handlePlanChange}
                 >
-                  {state.plans.map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.name} ({p.frequency})
-                    </option>
-                  ))}
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select plan" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {state.plans.map((p) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.name} ({p.frequency})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
                 </Select>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">
-                  Customer Address
-                </label>
+              <div className="grid gap-2">
+                <Label htmlFor="cust-address">Customer Address</Label>
                 <Input
+                  id="cust-address"
                   value={formData.customer_address}
-                  onChange={(e) => handleFieldChange("customer_address", e.target.value)}
+                  onChange={(e) =>
+                    handleFieldChange("customer_address", e.target.value)
+                  }
                   placeholder="Street, City, State, ZIP"
                 />
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
 
-          <div className="p-5 border rounded-xl bg-card space-y-4 shadow-2xs">
-            <h3 className="font-semibold text-sm border-b pb-2 text-foreground">Schedule &amp; Validity</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-              <div className="space-y-1.5">
-                <label className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">
-                  Start Date <span className="text-destructive">*</span>
-                </label>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">Schedule &amp; Validity</CardTitle>
+              <CardDescription className="text-xs">
+                Contract start date, expiration, and invoice payment terms.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid gap-2">
+                <Label htmlFor="start-date">Start Date</Label>
                 <Input
+                  id="start-date"
                   type="date"
                   value={formData.start_date}
-                  onChange={(e) => handleFieldChange("start_date", e.target.value)}
+                  onChange={(e) =>
+                    handleFieldChange("start_date", e.target.value)
+                  }
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">
-                  Expiry Date
-                </label>
+              <div className="grid gap-2">
+                <Label htmlFor="expiry-date">Expiry Date</Label>
                 <Input
+                  id="expiry-date"
                   type="date"
                   value={formData.expiry_date}
-                  onChange={(e) => handleFieldChange("expiry_date", e.target.value)}
+                  onChange={(e) =>
+                    handleFieldChange("expiry_date", e.target.value)
+                  }
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">
-                  Payment Terms
-                </label>
+              <div className="grid gap-2">
+                <Label>Payment Terms</Label>
                 <Select
                   value={formData.payment_terms}
-                  onChange={(e) => handleFieldChange("payment_terms", e.target.value)}
+                  onValueChange={(val) =>
+                    handleFieldChange("payment_terms", val)
+                  }
                 >
-                  <option value="Net 15">Net 15 Days</option>
-                  <option value="Immediate">Immediate</option>
-                  <option value="Net 30">Net 30 Days</option>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select payment terms" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Net 15">Net 15 Days</SelectItem>
+                    <SelectItem value="Immediate">Immediate</SelectItem>
+                    <SelectItem value="Net 30">Net 30 Days</SelectItem>
+                  </SelectContent>
                 </Select>
               </div>
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
-        {/* TAB 2: ITEMS & ADD-ONS (Child Table) */}
+        {/* TAB 2: ITEMS & ADD-ONS */}
         <TabsContent value="items" className="space-y-4">
-          <div className="p-5 border rounded-xl bg-card space-y-4 shadow-2xs">
-            <div className="flex items-center justify-between border-b pb-3">
-              <div>
-                <h3 className="font-semibold text-sm text-foreground">Line Items &amp; Variant Surcharges</h3>
-                <p className="text-xs text-muted-foreground">
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0">
+              <div className="space-y-1">
+                <CardTitle className="text-sm">
+                  Line Items &amp; Variant Surcharges
+                </CardTitle>
+                <CardDescription className="text-xs">
                   Products with brand variant adjustments (e.g. Odoo Compatibility Layer adds +$560.00).
-                </p>
+                </CardDescription>
               </div>
               <Button
                 variant="outline"
                 size="sm"
                 onClick={handleAddItemRow}
-                className="gap-1 h-8 text-xs"
+                className="h-8 text-xs"
               >
-                <Plus className="w-3.5 h-3.5" />
+                <Plus className="h-3.5 w-3.5" />
                 <span>Add Row</span>
               </Button>
-            </div>
-
-            <div className="border rounded-lg overflow-hidden">
-              <table className="w-full text-xs">
-                <thead className="bg-muted/40 border-b">
-                  <tr>
-                    <th className="p-2.5 text-left font-semibold text-muted-foreground w-8">#</th>
-                    <th className="p-2.5 text-left font-semibold text-muted-foreground">Product</th>
-                    <th className="p-2.5 text-left font-semibold text-muted-foreground">Variant Surcharge</th>
-                    <th className="p-2.5 text-center font-semibold text-muted-foreground w-20">Qty</th>
-                    <th className="p-2.5 text-right font-semibold text-muted-foreground w-28">Rate ($)</th>
-                    <th className="p-2.5 text-right font-semibold text-muted-foreground w-28">Amount ($)</th>
-                    <th className="p-2.5 text-center font-semibold text-muted-foreground w-10"></th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y">
-                  {formData.items.map((it, idx) => (
-                    <tr key={idx} className="hover:bg-muted/20">
-                      <td className="p-2.5 text-muted-foreground">{idx + 1}</td>
-                      <td className="p-2.5 font-medium">{it.product_name}</td>
-                      <td className="p-2.5">
-                        {it.product_id === "PROD-01" ? (
-                          <Select
-                            value={it.variant_name}
-                            onChange={(e) => handleItemVariantChange(idx, e.target.value)}
-                            className="h-8 text-xs max-w-xs"
+            </CardHeader>
+            <CardContent>
+              <div className="rounded-md border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-10">#</TableHead>
+                      <TableHead>Product</TableHead>
+                      <TableHead>Variant Surcharge</TableHead>
+                      <TableHead className="text-center w-24">Qty</TableHead>
+                      <TableHead className="text-right w-28">
+                        Rate ($)
+                      </TableHead>
+                      <TableHead className="text-right w-28">
+                        Amount ($)
+                      </TableHead>
+                      <TableHead className="w-12"></TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {formData.items.map((it, idx) => (
+                      <TableRow key={idx}>
+                        <TableCell className="text-muted-foreground text-xs">
+                          {idx + 1}
+                        </TableCell>
+                        <TableCell className="font-medium text-xs">
+                          {it.product_name}
+                        </TableCell>
+                        <TableCell>
+                          {it.product_id === "PROD-01" ? (
+                            <Select
+                              value={it.variant_name || "Standard Edition"}
+                              onValueChange={(val) =>
+                                handleItemVariantChange(idx, val)
+                              }
+                            >
+                              <SelectTrigger className="h-8 text-xs max-w-xs">
+                                <SelectValue placeholder="Select variant" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                <SelectItem value="Standard Edition">
+                                  Standard Edition (+$0.00)
+                                </SelectItem>
+                                <SelectItem value="Brand: Odoo Compatibility Layer">
+                                  Brand: Odoo Compatibility Layer (+$560.00)
+                                </SelectItem>
+                                <SelectItem value="Enterprise Multi-Company">
+                                  Enterprise Multi-Company (+$300.00)
+                                </SelectItem>
+                              </SelectContent>
+                            </Select>
+                          ) : (
+                            <Badge variant="outline" className="text-xs font-normal">
+                              Standard
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Input
+                            type="number"
+                            min="1"
+                            value={it.quantity}
+                            onChange={(e) =>
+                              handleItemQtyChange(
+                                idx,
+                                parseInt(e.target.value) || 1
+                              )
+                            }
+                            className="h-8 w-16 text-center mx-auto text-xs"
+                          />
+                        </TableCell>
+                        <TableCell className="text-right font-mono text-xs">
+                          {fmtCurr(it.unit_price)}
+                        </TableCell>
+                        <TableCell className="text-right font-mono font-semibold text-xs">
+                          {fmtCurr(it.subtotal)}
+                        </TableCell>
+                        <TableCell className="text-center">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                            onClick={() => handleRemoveItemRow(idx)}
                           >
-                            <option value="Standard Edition">Standard Edition (+$0.00)</option>
-                            <option value="Brand: Odoo Compatibility Layer">
-                              Brand: Odoo Compatibility Layer (+$560.00)
-                            </option>
-                            <option value="Enterprise Multi-Company">
-                              Enterprise Multi-Company (+$300.00)
-                            </option>
-                          </Select>
-                        ) : (
-                          <span className="text-muted-foreground italic">Standard</span>
-                        )}
-                      </td>
-                      <td className="p-2.5 text-center">
-                        <Input
-                          type="number"
-                          min="1"
-                          value={it.quantity}
-                          onChange={(e) => handleItemQtyChange(idx, parseInt(e.target.value) || 1)}
-                          className="h-8 w-16 text-center mx-auto"
-                        />
-                      </td>
-                      <td className="p-2.5 text-right font-mono">{fmtCurr(it.unit_price)}</td>
-                      <td className="p-2.5 text-right font-mono font-semibold">{fmtCurr(it.subtotal)}</td>
-                      <td className="p-2.5 text-center">
-                        <button
-                          onClick={() => handleRemoveItemRow(idx)}
-                          className="text-muted-foreground hover:text-destructive transition-colors p-1"
-                          title="Remove item"
-                        >
-                          <Trash2 className="w-3.5 h-3.5" />
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </CardContent>
+          </Card>
         </TabsContent>
 
         {/* TAB 3: RECURRING & TAXES */}
         <TabsContent value="billing" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="p-5 border rounded-xl bg-card space-y-4 shadow-2xs">
-              <h3 className="font-semibold text-sm border-b pb-2 text-foreground">Recurring Billing Engine</h3>
-              <div className="space-y-3 text-xs">
-                <div className="space-y-1">
-                  <label className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">
-                    Billing Frequency
-                  </label>
-                  <Input value={formData.frequency} readOnly className="bg-muted/40 font-medium" />
-                </div>
-                <div className="space-y-1">
-                  <label className="font-semibold text-muted-foreground uppercase text-[10px] tracking-wider">
-                    Next Scheduled Billing Date
-                  </label>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">
+                  Recurring Billing Engine
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Automated interval scheduling and next invoice generation date.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="grid gap-2">
+                  <Label htmlFor="billing-freq">Billing Frequency</Label>
                   <Input
+                    id="billing-freq"
+                    value={formData.frequency}
+                    readOnly
+                    className="bg-muted/40 font-medium"
+                  />
+                </div>
+                <div className="grid gap-2">
+                  <Label htmlFor="next-billing">
+                    Next Scheduled Billing Date
+                  </Label>
+                  <Input
+                    id="next-billing"
                     type="date"
                     value={formData.next_billing_date}
-                    onChange={(e) => handleFieldChange("next_billing_date", e.target.value)}
+                    onChange={(e) =>
+                      handleFieldChange("next_billing_date", e.target.value)
+                    }
                   />
                   <p className="text-[11px] text-muted-foreground">
-                    Next cron billing date. If on or before today, clicking &ldquo;Run Billing Day&rdquo; will automatically generate an invoice.
+                    Next cron billing date. If on or before today, clicking
+                    &ldquo;Run Billing Day&rdquo; will automatically generate an
+                    invoice.
                   </p>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
 
-            <div className="p-5 border rounded-xl bg-card space-y-4 shadow-2xs">
-              <h3 className="font-semibold text-sm border-b pb-2 text-foreground">Totals &amp; Tax Summary</h3>
-              <div className="space-y-2.5 text-xs">
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-sm">
+                  Totals &amp; Tax Summary
+                </CardTitle>
+                <CardDescription className="text-xs">
+                  Calculated net amount, active discount deductions, and 18% VAT.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-3 text-xs">
                 <div className="flex justify-between">
                   <span className="text-muted-foreground">Subtotal:</span>
-                  <span className="font-medium font-mono">{fmtCurr(formData.subtotal)}</span>
+                  <span className="font-medium font-mono">
+                    {fmtCurr(formData.subtotal)}
+                  </span>
                 </div>
                 <div className="flex justify-between text-amber-600">
                   <span>Discount Applied:</span>
-                  <span className="font-mono">-{fmtCurr(formData.discount_amount)}</span>
+                  <span className="font-mono">
+                    -{fmtCurr(formData.discount_amount)}
+                  </span>
                 </div>
                 <div className="flex justify-between text-muted-foreground">
                   <span>Standard VAT (18%):</span>
-                  <span className="font-medium font-mono">{fmtCurr(formData.tax_amount)}</span>
+                  <span className="font-medium font-mono">
+                    {fmtCurr(formData.tax_amount)}
+                  </span>
                 </div>
-                <div className="flex justify-between text-sm font-bold border-t pt-2 border-foreground/10">
+                <Separator />
+                <div className="flex justify-between text-sm font-bold pt-1">
                   <span>Grand Total:</span>
-                  <span className="text-blue-600 font-mono">{fmtCurr(formData.grand_total)}</span>
+                  <span className="text-primary font-mono">
+                    {fmtCurr(formData.grand_total)}
+                  </span>
                 </div>
-              </div>
-            </div>
+              </CardContent>
+            </Card>
           </div>
         </TabsContent>
 
         {/* TAB 4: ACTIVITY TIMELINE */}
         <TabsContent value="timeline">
-          <div className="p-5 border rounded-xl bg-card space-y-4 shadow-2xs">
-            <h3 className="font-semibold text-sm border-b pb-2 text-foreground">Lifecycle Audit Log</h3>
-            <div className="space-y-4">
-              {(!formData.timeline || formData.timeline.length === 0) ? (
-                <p className="text-xs text-muted-foreground py-4 text-center">No timeline events recorded.</p>
+          <Card>
+            <CardHeader>
+              <CardTitle className="text-sm">Lifecycle Audit Log</CardTitle>
+              <CardDescription className="text-xs">
+                Immutable history of state transitions and recurring billing events.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {!formData.timeline || formData.timeline.length === 0 ? (
+                <p className="text-xs text-muted-foreground py-4 text-center">
+                  No timeline events recorded.
+                </p>
               ) : (
                 formData.timeline.map((item, idx) => (
-                  <div key={idx} className="flex space-x-3 text-xs">
-                    <div className="w-2 h-2 rounded-full bg-blue-600 mt-1.5 shrink-0" />
+                  <div key={idx} className="flex items-start gap-3 text-xs">
+                    <Badge className="h-2 w-2 rounded-full p-0 mt-1.5 shrink-0" />
                     <div>
-                      <p className="font-semibold text-foreground">{item.text}</p>
-                      <p className="text-[11px] text-muted-foreground">{item.meta}</p>
+                      <p className="font-semibold text-foreground">
+                        {item.text}
+                      </p>
+                      <p className="text-[11px] text-muted-foreground">
+                        {item.meta}
+                      </p>
                     </div>
                   </div>
                 ))
               )}
-            </div>
-          </div>
+            </CardContent>
+          </Card>
         </TabsContent>
       </Tabs>
     </div>

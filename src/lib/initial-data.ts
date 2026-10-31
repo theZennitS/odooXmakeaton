@@ -361,11 +361,13 @@ export const DEFAULT_PAYMENTS: Payment[] = [
 ];
 
 export const INITIAL_STATE: BrightloopState = {
+  companies: [],
+  users: [],
   products: DEFAULT_PRODUCTS,
   plans: DEFAULT_PLANS,
   subscriptions: DEFAULT_SUBSCRIPTIONS,
   invoices: DEFAULT_INVOICES,
   payments: DEFAULT_PAYMENTS,
   discount_rules: DEFAULT_DISCOUNT_RULES,
-  counters: { SUB: 6, INV: 3, PAY: 2 }
+  counters: { SUB: 6, INV: 3, PAY: 2, USR: 1, COMP: 1 }
 };

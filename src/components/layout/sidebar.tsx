@@ -3,6 +3,11 @@
 import React from "react";
 import { useBrightloop } from "@/context/brightloop-context";
 import { WorkspaceId } from "@/types";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
 import {
   Layers,
   Receipt,
@@ -12,7 +17,6 @@ import {
   UserCheck,
   CheckCircle,
 } from "lucide-react";
-import { cn } from "@/lib/utils";
 
 interface NavItem {
   id: WorkspaceId;
@@ -21,33 +25,33 @@ interface NavItem {
 }
 
 export const Sidebar: React.FC = () => {
-  const { currentWorkspace, navigateTo, currentRole } = useBrightloop();
+  const { currentWorkspace, navigateTo } = useBrightloop();
 
   const mainWorkspaces: NavItem[] = [
     {
       id: "subscriptions",
       label: "Subscriptions",
-      icon: <Layers className="w-4 h-4" />,
+      icon: <Layers className="h-4 w-4" />,
     },
     {
       id: "billing",
       label: "Billing & Invoices",
-      icon: <Receipt className="w-4 h-4" />,
+      icon: <Receipt className="h-4 w-4" />,
     },
     {
       id: "products",
       label: "Products & Plans",
-      icon: <Package className="w-4 h-4" />,
+      icon: <Package className="h-4 w-4" />,
     },
     {
       id: "discounts",
       label: "Discount Rules",
-      icon: <Tag className="w-4 h-4" />,
+      icon: <Tag className="h-4 w-4" />,
     },
     {
       id: "analytics",
       label: "Finance Analytics",
-      icon: <BarChart3 className="w-4 h-4" />,
+      icon: <BarChart3 className="h-4 w-4" />,
     },
   ];
 
@@ -55,83 +59,80 @@ export const Sidebar: React.FC = () => {
     {
       id: "portal",
       label: "Customer Portal",
-      icon: <UserCheck className="w-4 h-4" />,
+      icon: <UserCheck className="h-4 w-4" />,
     },
   ];
 
   return (
     <aside className="w-60 border-r bg-muted/20 flex flex-col justify-between shrink-0 h-[calc(100vh-3.5rem)] sticky top-14 select-none">
-      <div className="p-3 space-y-6 overflow-y-auto">
-        {/* Main Workspaces */}
-        <div>
-          <div className="px-3 pb-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-            Workspaces
-          </div>
+      <ScrollArea className="flex-1 px-3 py-4">
+        <div className="space-y-6">
+          {/* Main Workspaces */}
           <div className="space-y-1">
+            <h4 className="px-3 pb-1 text-xs font-semibold text-muted-foreground tracking-tight">
+              Workspaces
+            </h4>
             {mainWorkspaces.map((item) => {
               const isActive = currentWorkspace === item.id;
               return (
-                <button
+                <Button
                   key={item.id}
+                  variant={isActive ? "default" : "ghost"}
+                  size="sm"
                   onClick={() => navigateTo(item.id, "list")}
-                  className={cn(
-                    "w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors text-left",
-                    isActive
-                      ? "bg-blue-600 text-white font-semibold shadow-xs"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
+                  className="w-full justify-start gap-2.5 text-xs font-medium"
                 >
-                  <span className={cn(isActive ? "text-white" : "text-muted-foreground")}>
-                    {item.icon}
-                  </span>
+                  {item.icon}
                   <span>{item.label}</span>
-                </button>
+                </Button>
               );
             })}
           </div>
-        </div>
 
-        {/* Portal & Tools */}
-        <div>
-          <div className="px-3 pb-2 text-[10px] font-bold text-muted-foreground uppercase tracking-wider">
-            Portal & Tools
-          </div>
+          <Separator />
+
+          {/* Portal & Tools */}
           <div className="space-y-1">
+            <h4 className="px-3 pb-1 text-xs font-semibold text-muted-foreground tracking-tight">
+              Portal &amp; Tools
+            </h4>
             {portalWorkspaces.map((item) => {
               const isActive = currentWorkspace === item.id;
               return (
-                <button
+                <Button
                   key={item.id}
+                  variant={isActive ? "default" : "ghost"}
+                  size="sm"
                   onClick={() => navigateTo(item.id, "list")}
-                  className={cn(
-                    "w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-xs font-medium transition-colors text-left",
-                    isActive
-                      ? "bg-blue-600 text-white font-semibold shadow-xs"
-                      : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
+                  className="w-full justify-start gap-2.5 text-xs font-medium"
                 >
-                  <span className={cn(isActive ? "text-white" : "text-muted-foreground")}>
-                    {item.icon}
-                  </span>
+                  {item.icon}
                   <span>{item.label}</span>
-                </button>
+                </Button>
               );
             })}
           </div>
         </div>
-      </div>
+      </ScrollArea>
 
-      {/* System Engine Footer Badge */}
-      <div className="p-3 border-t bg-muted/40 space-y-2">
-        <div className="flex items-center justify-between text-[11px]">
-          <span className="font-semibold text-foreground">Frappe v15 Engine</span>
-          <span className="inline-flex items-center gap-1 text-[10px] font-medium text-emerald-600 bg-emerald-50 border border-emerald-200 px-1.5 py-0.5 rounded-full">
-            <CheckCircle className="w-2.5 h-2.5" /> &lt; 2s SLA Pass
-          </span>
-        </div>
-        <p className="text-[10px] text-muted-foreground leading-tight">
-          Strict Idempotency Guard &amp; Zero Double-Billing Enforced.
-        </p>
+      {/* System Engine Footer Card */}
+      <div className="p-3 border-t">
+        <Card className="bg-background shadow-none">
+          <CardContent className="p-3 space-y-1.5">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-semibold text-foreground">
+                Frappe v15 Engine
+              </span>
+              <Badge variant="secondary" className="text-[10px] gap-1 px-1.5 py-0">
+                <CheckCircle className="h-2.5 w-2.5 text-emerald-600" />
+                &lt; 2s SLA
+              </Badge>
+            </div>
+            <p className="text-[11px] text-muted-foreground leading-tight">
+              Strict Idempotency Guard &amp; Zero Double-Billing Enforced.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </aside>
   );

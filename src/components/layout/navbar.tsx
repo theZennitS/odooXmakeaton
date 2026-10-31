@@ -4,15 +4,41 @@ import React from "react";
 import { useBrightloop } from "@/context/brightloop-context";
 import { Role } from "@/types";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
-  Search,
-  Zap,
-  Bell,
-  HelpCircle,
-  Shield,
-  User,
-  Users,
-} from "lucide-react";
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  BreadcrumbList,
+  BreadcrumbPage,
+  BreadcrumbSeparator,
+} from "@/components/ui/breadcrumb";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import { Search, Zap, Bell, RotateCcw } from "lucide-react";
 
 export const Navbar: React.FC = () => {
   const {
@@ -23,6 +49,7 @@ export const Navbar: React.FC = () => {
     triggerBillingDay,
     navigateTo,
     addToast,
+    resetDatabase,
   } = useBrightloop();
 
   const handleRoleChange = (newRole: Role) => {
@@ -66,92 +93,164 @@ export const Navbar: React.FC = () => {
   };
 
   return (
-    <header className="sticky top-0 z-40 w-full h-14 border-b bg-background/95 backdrop-blur-md flex items-center justify-between px-4">
-      {/* Left: Brand & Breadcrumb */}
-      <div className="flex items-center space-x-3">
-        <button
-          onClick={() => navigateTo("subscriptions", "list")}
-          className="flex items-center space-x-2 text-left focus:outline-none group"
-        >
-          <div className="w-8 h-8 rounded-lg bg-blue-600 text-white font-bold flex items-center justify-center text-sm shadow-sm group-hover:bg-blue-700 transition-colors">
-            B
-          </div>
-          <span className="font-bold text-base tracking-tight hidden sm:inline-block">
-            Brightloop
-          </span>
-        </button>
-
-        <div className="h-4 w-[1px] bg-border hidden sm:block" />
-
-        <div className="flex items-center text-xs font-medium text-muted-foreground">
-          <span className="text-foreground font-semibold">{getWorkspaceTitle()}</span>
-        </div>
-      </div>
-
-      {/* Center: Awesome-bar Search (Global Command Palette) */}
-      <div className="flex-1 max-w-md mx-4 hidden md:block">
-        <button
-          type="button"
-          onClick={() => setIsAwesomeBarOpen(true)}
-          className="w-full h-9 px-3 rounded-lg border bg-muted/40 hover:bg-muted/70 text-muted-foreground flex items-center justify-between text-xs transition-colors shadow-2xs"
-        >
-          <div className="flex items-center space-x-2">
-            <Search className="w-3.5 h-3.5 text-muted-foreground" />
-            <span>Search or type a command...</span>
-          </div>
-          <kbd className="text-[10px] bg-background border px-1.5 py-0.5 rounded text-muted-foreground font-mono shadow-2xs">
-            ⌘K
-          </kbd>
-        </button>
-      </div>
-
-      {/* Right: Actions, Role Switcher & Profile */}
-      <div className="flex items-center space-x-2 sm:space-x-3">
-        {/* Run Billing Day Cron Button */}
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => triggerBillingDay()}
-          className="h-8 gap-1.5 text-xs font-medium text-blue-600 border-blue-200 bg-blue-50/50 hover:bg-blue-100 hover:text-blue-700 shadow-2xs"
-          title="Simulate daily scheduled recurring billing cron"
-        >
-          <Zap className="w-3.5 h-3.5 fill-blue-600 text-blue-600" />
-          <span className="hidden sm:inline">Run Billing Day</span>
-        </Button>
-
-        {/* 3-Tier Role Switcher for Hackathon Judges */}
-        <div className="flex items-center border rounded-md px-2 py-1 bg-muted/40 text-xs">
-          <span className="text-muted-foreground mr-1.5 text-[11px] font-medium hidden lg:inline">Role:</span>
-          <select
-            value={currentRole}
-            onChange={(e) => handleRoleChange(e.target.value as Role)}
-            className="bg-transparent font-medium text-xs focus:outline-none cursor-pointer"
+    <TooltipProvider delayDuration={150}>
+      <header className="sticky top-0 z-40 w-full h-14 border-b bg-background flex items-center justify-between px-4">
+        {/* Left: Brand & Official shadcn Breadcrumb */}
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => navigateTo("subscriptions", "list")}
+            className="px-2 gap-2 font-bold text-base"
           >
-            <option value="Admin">System Manager (Admin)</option>
-            <option value="Staff">Sales & Billing Staff</option>
-            <option value="Customer">Customer (Brooklyn Zoe)</option>
-          </select>
+            <Badge className="h-7 w-7 rounded-md p-0 flex items-center justify-center text-xs font-bold">
+              B
+            </Badge>
+            <span className="hidden sm:inline-block tracking-tight">
+              Brightloop
+            </span>
+          </Button>
+
+          <Separator orientation="vertical" className="h-4 hidden sm:block" />
+
+          <Breadcrumb className="hidden sm:block">
+            <BreadcrumbList>
+              <BreadcrumbItem>
+                <BreadcrumbLink
+                  className="cursor-pointer text-xs"
+                  onClick={() => navigateTo("subscriptions", "list")}
+                >
+                  Desk
+                </BreadcrumbLink>
+              </BreadcrumbItem>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem>
+                <BreadcrumbPage className="text-xs font-semibold">
+                  {getWorkspaceTitle()}
+                </BreadcrumbPage>
+              </BreadcrumbItem>
+            </BreadcrumbList>
+          </Breadcrumb>
         </div>
 
-        {/* Notification Bell */}
-        <button
-          type="button"
-          onClick={() => addToast("All services operational. Automated cron scheduler is active.", "info")}
-          className="p-1.5 text-muted-foreground hover:text-foreground rounded-md hover:bg-muted/50 transition-colors relative"
-          title="Notifications"
-        >
-          <Bell className="w-4 h-4" />
-          <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-blue-600 rounded-full" />
-        </button>
-
-        {/* User Avatar */}
-        <div
-          className="w-8 h-8 rounded-full bg-slate-900 text-white flex items-center justify-center text-xs font-semibold shadow-xs select-none"
-          title={`Logged in as ${currentRole}`}
-        >
-          {getAvatarInitials()}
+        {/* Center: Awesome-bar Search Trigger (Official shadcn Button + Badge) */}
+        <div className="flex-1 max-w-md mx-4 hidden md:block">
+          <Button
+            variant="outline"
+            onClick={() => setIsAwesomeBarOpen(true)}
+            className="w-full h-9 justify-between text-xs text-muted-foreground font-normal px-3"
+          >
+            <span className="flex items-center gap-2">
+              <Search className="h-3.5 w-3.5 text-muted-foreground" />
+              <span>Search or type a command...</span>
+            </span>
+            <Badge variant="secondary" className="font-mono text-[10px] px-1.5 py-0">
+              ⌘K
+            </Badge>
+          </Button>
         </div>
-      </div>
-    </header>
+
+        {/* Right: Actions, Official shadcn Select Role Switcher & DropdownMenu Profile */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => triggerBillingDay()}
+                className="h-8 text-xs font-medium"
+              >
+                <Zap className="h-3.5 w-3.5 text-primary" />
+                <span className="hidden sm:inline">Run Billing Day</span>
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>
+              Simulate daily scheduled recurring billing cron
+            </TooltipContent>
+          </Tooltip>
+
+          {/* Official shadcn Select Role Switcher */}
+          <div className="flex items-center gap-1.5">
+            <Select
+              value={currentRole}
+              onValueChange={(val) => handleRoleChange(val as Role)}
+            >
+              <SelectTrigger className="h-8 w-[180px] text-xs">
+                <SelectValue placeholder="Select role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Admin">System Manager (Admin)</SelectItem>
+                <SelectItem value="Staff">Sales &amp; Billing Staff</SelectItem>
+                <SelectItem value="Customer">Customer (Brooklyn Zoe)</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8 relative"
+                onClick={() =>
+                  addToast(
+                    "All services operational. Automated cron scheduler is active.",
+                    "info"
+                  )
+                }
+              >
+                <Bell className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>System Notifications</TooltipContent>
+          </Tooltip>
+
+          {/* Official shadcn DropdownMenu + Avatar */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="relative h-8 w-8 rounded-full p-0">
+                <Avatar className="h-8 w-8">
+                  <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
+                    {getAvatarInitials()}
+                  </AvatarFallback>
+                </Avatar>
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent className="w-56" align="end" forceMount>
+              <DropdownMenuLabel className="font-normal">
+                <div className="flex flex-col space-y-1">
+                  <p className="text-sm font-medium leading-none">
+                    {currentRole === "Customer" ? "Brooklyn Zoe" : currentRole}
+                  </p>
+                  <p className="text-xs leading-none text-muted-foreground">
+                    Active Session Role
+                  </p>
+                </div>
+              </DropdownMenuLabel>
+              <DropdownMenuSeparator />
+              <DropdownMenuRadioGroup
+                value={currentRole}
+                onValueChange={(val) => handleRoleChange(val as Role)}
+              >
+                <DropdownMenuRadioItem value="Admin">
+                  System Manager (Admin)
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="Staff">
+                  Sales &amp; Billing Staff
+                </DropdownMenuRadioItem>
+                <DropdownMenuRadioItem value="Customer">
+                  Customer (Brooklyn Zoe)
+                </DropdownMenuRadioItem>
+              </DropdownMenuRadioGroup>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => resetDatabase()}>
+                <RotateCcw className="mr-2 h-4 w-4" />
+                <span>Reset Demo Fixtures</span>
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+      </header>
+    </TooltipProvider>
   );
 };

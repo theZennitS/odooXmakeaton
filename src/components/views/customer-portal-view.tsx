@@ -4,11 +4,39 @@ import React from "react";
 import { useBrightloop } from "@/context/brightloop-context";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Separator } from "@/components/ui/separator";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { fmtCurr } from "@/lib/utils";
 import { UserCheck, ShieldCheck, Pause, Play, XCircle, Printer } from "lucide-react";
 
 export const CustomerPortalView: React.FC = () => {
-  const { state, updateSubStatus, setPreviewInvoice, addToast } = useBrightloop();
+  const { state, updateSubStatus, setPreviewInvoice } = useBrightloop();
 
   // Data isolation: Brooklyn Zoe only
   const mySubs = state.subscriptions.filter((s) =>
@@ -20,81 +48,82 @@ export const CustomerPortalView: React.FC = () => {
 
   const togglePause = (subId: string, currentStatus: string) => {
     const newStatus = currentStatus === "Active" ? "Paused" : "Active";
-    updateSubStatus(subId, newStatus as any);
-  };
-
-  const cancelPlan = (subId: string) => {
-    if (window.confirm("Are you sure you wish to cancel this subscription plan?")) {
-      updateSubStatus(subId, "Closed");
-    }
+    updateSubStatus(subId, newStatus as "Active" | "Paused");
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case "Active":
-        return <Badge variant="success">Active</Badge>;
+        return <Badge variant="default">Active</Badge>;
       case "Paused":
         return <Badge variant="secondary">Paused</Badge>;
       case "Closed":
         return <Badge variant="outline">Closed</Badge>;
       default:
-        return <Badge variant="info">{status}</Badge>;
+        return <Badge variant="secondary">{status}</Badge>;
     }
   };
 
   return (
     <div className="space-y-6">
-      {/* Banner */}
-      <div className="p-5 border rounded-xl bg-gradient-to-r from-blue-50/60 to-background border-blue-200/60 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs">
-        <div className="space-y-1">
-          <div className="flex items-center space-x-2">
-            <UserCheck className="w-5 h-5 text-blue-600" />
-            <h1 className="text-xl font-bold tracking-tight text-foreground">
-              Customer Portal &mdash; Brooklyn Zoe
-            </h1>
+      {/* Portal Header Card */}
+      <Card>
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 space-y-0">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2">
+              <UserCheck className="h-5 w-5 text-primary" />
+              <CardTitle className="text-lg">
+                Customer Portal &mdash; Brooklyn Zoe
+              </CardTitle>
+            </div>
+            <CardDescription className="text-xs">
+              Self-service dashboard: view active software subscriptions, pause or resume plans, and download official tax receipts.
+            </CardDescription>
           </div>
-          <p className="text-xs text-muted-foreground">
-            Self-service dashboard: view active software subscriptions, pause/renew, and download official tax receipts.
-          </p>
-        </div>
 
-        <div className="flex items-center gap-1.5 text-xs font-semibold text-blue-700 bg-blue-100/80 px-2.5 py-1 rounded-full border border-blue-200 self-start sm:self-center">
-          <ShieldCheck className="w-3.5 h-3.5" />
-          <span>Customer Isolation Active</span>
-        </div>
-      </div>
+          <Badge variant="secondary" className="gap-1.5 self-start sm:self-center">
+            <ShieldCheck className="h-3.5 w-3.5 text-primary" />
+            <span>Customer Isolation Active</span>
+          </Badge>
+        </CardHeader>
+      </Card>
 
       {/* Split Cards */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* My Subscriptions */}
-        <div className="p-5 border rounded-xl bg-card shadow-xs space-y-4">
-          <h3 className="font-bold text-sm text-foreground border-b pb-2">
-            My Subscriptions ({mySubs.length})
-          </h3>
-
-          <div className="space-y-3">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">
+              My Subscriptions ({mySubs.length})
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Manage your active recurring plans and billing preferences.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
             {mySubs.length === 0 ? (
               <p className="text-xs text-muted-foreground py-4 text-center">
                 No active subscriptions found for this account.
               </p>
             ) : (
               mySubs.map((s) => (
-                <div
-                  key={s.id}
-                  className="p-4 border rounded-lg bg-muted/20 space-y-3 hover:border-border transition-colors"
-                >
-                  <div className="flex justify-between items-start">
+                <Card key={s.id} className="bg-muted/20 shadow-none">
+                  <CardHeader className="p-4 pb-2 flex flex-row items-start justify-between space-y-0">
                     <div>
-                      <h4 className="font-semibold text-sm text-foreground">{s.plan_name}</h4>
-                      <p className="font-mono text-xs text-muted-foreground">{s.id}</p>
+                      <CardTitle className="text-sm">{s.plan_name}</CardTitle>
+                      <CardDescription className="font-mono text-xs">
+                        {s.id}
+                      </CardDescription>
                     </div>
                     {getStatusBadge(s.status)}
-                  </div>
+                  </CardHeader>
 
-                  <div className="text-xs text-muted-foreground space-y-1">
+                  <CardContent className="p-4 pt-2 text-xs text-muted-foreground space-y-1">
                     <div>
                       Next Scheduled Billing:{" "}
-                      <strong className="text-foreground font-mono">{s.next_billing_date}</strong>
+                      <strong className="text-foreground font-mono">
+                        {s.next_billing_date}
+                      </strong>
                     </div>
                     <div>
                       Amount:{" "}
@@ -103,96 +132,139 @@ export const CustomerPortalView: React.FC = () => {
                       </strong>{" "}
                       / {s.frequency.toLowerCase()}
                     </div>
-                  </div>
+                  </CardContent>
 
                   {s.status !== "Closed" && (
-                    <div className="flex space-x-2 pt-1 border-t">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => togglePause(s.id, s.status)}
-                        className="h-7 text-xs gap-1"
-                      >
-                        {s.status === "Active" ? (
-                          <>
-                            <Pause className="w-3 h-3" />
-                            <span>Pause Plan</span>
-                          </>
-                        ) : (
-                          <>
-                            <Play className="w-3 h-3" />
-                            <span>Resume Plan</span>
-                          </>
-                        )}
-                      </Button>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => cancelPlan(s.id)}
-                        className="h-7 text-xs gap-1 text-destructive hover:bg-destructive/10 hover:text-destructive"
-                      >
-                        <XCircle className="w-3 h-3" />
-                        <span>Cancel Plan</span>
-                      </Button>
-                    </div>
+                    <>
+                      <Separator />
+                      <CardFooter className="p-3 gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => togglePause(s.id, s.status)}
+                          className="h-7 text-xs"
+                        >
+                          {s.status === "Active" ? (
+                            <>
+                              <Pause className="h-3 w-3" />
+                              <span>Pause Plan</span>
+                            </>
+                          ) : (
+                            <>
+                              <Play className="h-3 w-3" />
+                              <span>Resume Plan</span>
+                            </>
+                          )}
+                        </Button>
+
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              className="h-7 text-xs text-destructive hover:text-destructive"
+                            >
+                              <XCircle className="h-3 w-3" />
+                              <span>Cancel Plan</span>
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Cancel Subscription {s.id}?
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Are you sure you wish to cancel {s.plan_name}? Future recurring billing cycles will be stopped immediately.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Keep Plan</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => updateSubStatus(s.id, "Closed")}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Confirm Cancellation
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </CardFooter>
+                    </>
                   )}
-                </div>
+                </Card>
               ))
             )}
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
         {/* My Invoices & Receipts */}
-        <div className="p-5 border rounded-xl bg-card shadow-xs space-y-4">
-          <h3 className="font-bold text-sm text-foreground border-b pb-2">
-            My Invoices &amp; Receipts ({myInvs.length})
-          </h3>
-
-          <div className="space-y-2.5">
-            {myInvs.length === 0 ? (
-              <p className="text-xs text-muted-foreground py-4 text-center">
-                No invoices issued yet.
-              </p>
-            ) : (
-              myInvs.map((inv) => (
-                <div
-                  key={inv.id}
-                  className="flex items-center justify-between p-3 border rounded-lg bg-muted/20 hover:bg-muted/40 transition-colors"
-                >
-                  <div className="space-y-0.5">
-                    <div className="flex items-center space-x-2">
-                      <span className="font-mono font-bold text-xs text-blue-600">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-sm">
+              My Invoices &amp; Receipts ({myInvs.length})
+            </CardTitle>
+            <CardDescription className="text-xs">
+              Official tax invoices and payment status for your account.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-0">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="pl-6">Invoice</TableHead>
+                  <TableHead>Date</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right pr-6">Receipt</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {myInvs.length === 0 ? (
+                  <TableRow>
+                    <TableCell
+                      colSpan={4}
+                      className="h-24 text-center text-muted-foreground"
+                    >
+                      No invoices issued yet.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  myInvs.map((inv) => (
+                    <TableRow key={inv.id}>
+                      <TableCell className="pl-6 font-mono font-semibold text-xs text-primary">
                         {inv.id}
-                      </span>
-                      <span className="text-xs text-muted-foreground">&bull; {inv.invoice_date}</span>
-                    </div>
-                    <div className="text-xs font-mono font-medium">
-                      {inv.outstanding_amount > 0 ? (
-                        <span className="text-destructive">
-                          Due: {fmtCurr(inv.outstanding_amount)}
-                        </span>
-                      ) : (
-                        <span className="text-emerald-600 font-semibold">
-                          Paid in Full ({fmtCurr(inv.grand_total)})
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  <Button
-                    variant="subtle"
-                    size="sm"
-                    onClick={() => setPreviewInvoice(inv)}
-                    className="h-7 text-xs gap-1"
-                  >
-                    <Printer className="w-3 h-3" />
-                    <span>View Receipt</span>
-                  </Button>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
+                      </TableCell>
+                      <TableCell className="text-xs text-muted-foreground font-mono">
+                        {inv.invoice_date}
+                      </TableCell>
+                      <TableCell className="text-xs font-mono">
+                        {inv.outstanding_amount > 0 ? (
+                          <Badge variant="destructive">
+                            Due: {fmtCurr(inv.outstanding_amount)}
+                          </Badge>
+                        ) : (
+                          <Badge variant="secondary">
+                            Paid ({fmtCurr(inv.grand_total)})
+                          </Badge>
+                        )}
+                      </TableCell>
+                      <TableCell className="text-right pr-6">
+                        <Button
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => setPreviewInvoice(inv)}
+                          className="h-7 text-xs"
+                        >
+                          <Printer className="h-3 w-3" />
+                          <span>Receipt</span>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))
+                )}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );

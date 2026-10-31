@@ -9,6 +9,11 @@ import {
   Invoice,
   DiscountRule,
   SubscriptionStatus,
+  User,
+  UserStatus,
+  Company,
+  AuthSession,
+  RegisterPayload,
 } from "@/types";
 import { INITIAL_STATE } from "@/lib/initial-data";
 import { runBillingDay, recordPayment } from "@/lib/engine";
@@ -21,7 +26,7 @@ interface Toast {
   type: "success" | "warning" | "info" | "error";
 }
 
-interface BrightloopContextType {
+export interface BrightloopContextType {
   state: BrightloopState;
   currentWorkspace: WorkspaceId;
   setCurrentWorkspace: (ws: WorkspaceId) => void;
@@ -32,6 +37,48 @@ interface BrightloopContextType {
   viewMode: "list" | "form";
   setViewMode: (mode: "list" | "form") => void;
   navigateTo: (workspace: WorkspaceId, mode?: "list" | "form", docId?: string | null) => void;
+
+  // Auth & Current User
+  currentUser: User | null;
+  authSession: AuthSession | null;
+  isAuthenticated: boolean;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (payload: RegisterPayload) => Promise<{ success: boolean; error?: string }>;
+  logout: () => void;
+  updateCurrentUserProfile: (
+    updates: Partial<Pick<User, "name" | "email" | "phone" | "department" | "job_title" | "avatar_initials">>
+  ) => void;
+  changeUserPassword: (currentPassword: string, newPassword: string) => Promise<{ success: boolean; error?: string }>;
+  profileModalOpen: boolean;
+  setProfileModalOpen: (open: boolean) => void;
+
+  // User Management
+  createUserDoc: (
+    userData: Omit<User, "id" | "created_at" | "last_login_at" | "password_hash" | "avatar_initials"> & {
+      password?: string;
+    }
+  ) => User;
+  updateUserDoc: (user: User) => void;
+  deleteUserDoc: (userId: string) => void;
+  toggleUserStatus: (userId: string, status: UserStatus) => void;
+  userModalOpen: boolean;
+  setUserModalOpen: (open: boolean) => void;
+  editingUser: User | null;
+  setEditingUser: (user: User | null) => void;
+  openUserModal: (user?: User | null) => void;
+
+  // Company Management
+  activeCompanyId: string;
+  setActiveCompanyId: (companyId: string) => void;
+  activeCompany: Company;
+  createCompanyDoc: (companyData: Omit<Company, "id" | "created_at" | "logo_initials">) => Company;
+  updateCompanyDoc: (company: Company) => void;
+  deleteCompanyDoc: (companyId: string) => void;
+  companyModalOpen: boolean;
+  setCompanyModalOpen: (open: boolean) => void;
+  editingCompany: Company | null;
+  setEditingCompany: (company: Company | null) => void;
+  openCompanyModal: (company?: Company | null) => void;
   
   // Actions
   triggerBillingDay: (dateStr?: string) => { count: number; latency: string };
